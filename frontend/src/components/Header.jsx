@@ -9,7 +9,7 @@ export function Header(){
                 <div class="bg-[#173E82] w-fit h-fit p-2 rounded-4xl">
                     <h1 class="text-white">Dashboard</h1>
                 </div>
-                <h1 class="text-black font-medium">Class Browser</h1>
+                <h1 class="text-black font-medium flex-nowrap">Class Browser</h1>
             </div>
             <div class="text-black text-sm font-medium ml-4 justify-self-end">
                 <h2 class="">login</h2>
