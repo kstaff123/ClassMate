@@ -20,6 +20,12 @@
     },
     "attribute_code": {
       "type": "string"
+    },
+    "class_attribute": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::class-attribute.class-attribute",
+      "inversedBy": "attributes"
     }
   }
 }

@@ -4,7 +4,8 @@
   "info": {
     "singularName": "instructor",
     "pluralName": "instructors",
-    "displayName": "Instructors"
+    "displayName": "Instructors",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -21,7 +22,7 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::class.class",
-      "inversedBy": "instructor"
+      "inversedBy": "instructors"
     }
   }
 }

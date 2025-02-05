@@ -453,6 +453,10 @@ export interface ApiAttributeAttribute extends Struct.CollectionTypeSchema {
     attribute_code: Schema.Attribute.String;
     attribute_name: Schema.Attribute.String;
     attribute_type: Schema.Attribute.String;
+    class_attribute: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::class-attribute.class-attribute'
+    >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -546,6 +550,10 @@ export interface ApiClassAttributeClassAttribute
     draftAndPublish: true;
   };
   attributes: {
+    attributes: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::attribute.attribute'
+    >;
     class: Schema.Attribute.Relation<'manyToOne', 'api::class.class'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -584,7 +592,7 @@ export interface ApiClassClass extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     crn: Schema.Attribute.String;
-    instructor: Schema.Attribute.Relation<
+    instructors: Schema.Attribute.Relation<
       'oneToMany',
       'api::instructor.instructor'
     >;
@@ -642,6 +650,7 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
 export interface ApiInstructorInstructor extends Struct.CollectionTypeSchema {
   collectionName: 'instructors';
   info: {
+    description: '';
     displayName: 'Instructors';
     pluralName: 'instructors';
     singularName: 'instructor';

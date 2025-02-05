@@ -24,12 +24,6 @@
     "title": {
       "type": "string"
     },
-    "instructor": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::instructor.instructor",
-      "mappedBy": "class"
-    },
     "term": {
       "type": "string"
     },
@@ -58,6 +52,12 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::schedule.schedule",
+      "mappedBy": "class"
+    },
+    "instructors": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::instructor.instructor",
       "mappedBy": "class"
     }
   }
