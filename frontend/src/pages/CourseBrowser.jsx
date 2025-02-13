@@ -16,14 +16,15 @@ export function CourseBrowser() {
         setLoading(false); // Stop loading
     };
         return (
-            <main className="font-primary font-bold text-2xl bg-gray-100 h-screen flex-col flex">
+            <main className="font-primary font-bold text-2xl bg-gray-100 h-screen flex-col overflow-hidden flex">
                 <div className="flex-none">
                     <Header />
                 </div>
-                <div className="grid grid-cols-3 items-center grid-flow-col flex-grow p-8 gap-x-8">
-                    <div className="bg-white col-span-2 w-full h-7/8 rounded-4xl shadow-xl p-4">
+                <div className="grid grid-cols-3 items-center grid-flow-col flex-grow p-8 gap-x-8 max-h-screen">
+                    <div className="bg-white col-span-2 w-full h-[87.5vh] max-h-7/8 rounded-4xl shadow-xl p-4 ">
                         <div className="flex items-center">
                             <h2 className="text-2xl font-medium pr-2">Browse Classes</h2>
+                            {/*
                             <h2 className="font-light">|</h2>
                             <button 
                                 className="flex items-center gap-2 w-fit h-fit pl-2 text-black font-normal text-2xl transition-all duration-200 ease-in-out cursor-pointer group hover:text-blue-300"
@@ -42,9 +43,10 @@ export function CourseBrowser() {
                                 >
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
                                 </svg>
-                            </button>
+                            </button> */}
+                            
                         </div>
-                        
+                        <hr class="text-gray-300 pb-1"></hr>
                         <div className="py-1 flex-row items-center">
                             <CourseSearch/>
                         </div>
