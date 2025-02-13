@@ -3,7 +3,7 @@
   --font-primary: "Montserrat", sans-serif;
 }
 .react-select__control{
-  @apply w-fit min-w-14 h-10 !h-fit !min-h-0 box-border font-medium font-primary text-base border-2 pl-2 border-gray-300 transition-all ease-in-out;
+  @apply w-fit min-w-14 h-10 !h-fit !min-h-0 box-border font-medium font-primary !text-base border-2 pl-2 border-gray-300 transition-all ease-in-out;
 }
 .react-select__value-container{
   @apply w-36 min-w-36;
