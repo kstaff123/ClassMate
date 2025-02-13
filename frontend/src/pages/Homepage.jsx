@@ -1,6 +1,7 @@
 import "../App.css";
 import { useState } from "react";
 import { Header } from "../components/Header";
+import { Schedule } from "../components/Schedule";
 
 export function Homepage() {
     return(
@@ -9,10 +10,11 @@ export function Homepage() {
                 <Header/>
             </div>
             <div class="grid grid-cols-3 items-center grid-flow-col flex-grow p-8 gap-x-8" >
-                <div class="bg-white col-span-2 w-full h-7/8 rounded-4xl shadow-xl">
+                <div class="bg-white col-span-2 w-full h-7/8 rounded-4xl shadow-xl overflow-hidden overflow-y-auto">
                     <div class="flex items-center p-4">
                         <h2 class="text-xl font-medium">Schedule</h2>
                     </div>
+                    <Schedule/>
                 </div>
                 <div class="bg-white col-span-1 w-full h-7/8 rounded-4xl shadow-xl">
                     <div class="flex items-center p-4">
