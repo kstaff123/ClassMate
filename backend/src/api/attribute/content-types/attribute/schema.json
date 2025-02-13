@@ -1,0 +1,31 @@
+{
+  "kind": "collectionType",
+  "collectionName": "attributes",
+  "info": {
+    "singularName": "attribute",
+    "pluralName": "attributes",
+    "displayName": "Attributes",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "attribute_type": {
+      "type": "string"
+    },
+    "attribute_name": {
+      "type": "string"
+    },
+    "attribute_code": {
+      "type": "string"
+    },
+    "class_attribute": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::class-attribute.class-attribute",
+      "inversedBy": "attributes"
+    }
+  }
+}

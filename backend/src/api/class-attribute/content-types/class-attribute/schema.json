@@ -1,0 +1,28 @@
+{
+  "kind": "collectionType",
+  "collectionName": "class_attributes",
+  "info": {
+    "singularName": "class-attribute",
+    "pluralName": "class-attributes",
+    "displayName": "Class Attributes",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "class": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::class.class",
+      "inversedBy": "class_attributes"
+    },
+    "attributes": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::attribute.attribute",
+      "mappedBy": "class_attribute"
+    }
+  }
+}
