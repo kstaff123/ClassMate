@@ -3,7 +3,7 @@ const apiToken = import.meta.env.VITE_API_TOKEN;
 
 export const fetchCourseList = async () => {
     try{
-        const response = await fetch(`${baseUrl}/api/classes`, {
+        const response = await fetch(`${baseUrl}/api/classes?&populate=*`, {
             method: 'GET',
             headers: {
                 "Authorization": `Bearer ${apiToken}`,
