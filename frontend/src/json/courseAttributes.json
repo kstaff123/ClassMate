@@ -1,5 +1,6 @@
 {
     "gurAttributes": [
+        { "value": "", "label": "None" },
         { "value": "ACGM", "label": "ACGM" },
         { "value": "ACOM", "label": "ACOM" },
         { "value": "BCGM", "label": "BCGM" },
@@ -12,6 +13,7 @@
         { "value": "SSC", "label": "SSC" }
     ],
     "subjects": [
+    { "value": "", "label": "None" },
     { "value": "A/HI", "label": "A/HI" },
     { "value": "ACCT", "label": "ACCT" },
     { "value": "AECI", "label": "AECI" },
