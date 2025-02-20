@@ -4,7 +4,7 @@ const apiToken = import.meta.env.VITE_API_TOKEN;
 
 export const fetchCourseList = async () => {
     try {
-        const response = await fetch(`${baseUrl}/api/classes?populate[class_attributes][populate]=attribute`, {
+        const response = await fetch(`${baseUrl}/api/classes?populate=*&populate[class_attributes][populate][attribute][populate]=*&populate[schedules][populate]=*&populate=*`, {
             method: 'GET',
             headers: {
                 "Authorization": `Bearer ${apiToken}`,
