@@ -3,6 +3,7 @@ import Select from "react-select";
 import courseAttributes from "../json/courseAttributes.json";
 import instructorList from "../json/instructors.json";
 import { fetchCourseList } from "../apis/courseFetcher";
+import CopyButton from "./CopyButton";
 
 export function CourseSearch() {
   const [classes, setClasses] = useState([]);
@@ -12,7 +13,13 @@ export function CourseSearch() {
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [selectedDelivery, setSelectedDelivery] = useState(null);
   const [searchInput, setSearchInput] = useState("");
-
+  const daysOfWeek = [
+    { key: "monday", label: "M" },
+    { key: "tuesday", label: "T" },
+    { key: "wednesday", label: "W" },
+    { key: "thursday", label: "T" },
+    { key: "friday", label: "F" },
+  ];
   const handleSearch = async () => {
     setLoading(true);
 
@@ -20,7 +27,10 @@ export function CourseSearch() {
       const data = await fetchCourseList();
       let filteredClasses = data?.data || [];
 
-      console.log("Raw API Response:", JSON.stringify(filteredClasses, null, 2)); // Log full response
+      console.log(
+        "Raw API Response:",
+        JSON.stringify(filteredClasses, null, 2)
+      ); // Log full response
 
       // Filter by title if searchInput is provided
       if (searchInput) {
@@ -34,9 +44,15 @@ export function CourseSearch() {
         console.log("Selected GUR:", selectedGUR.value);
         filteredClasses = filteredClasses.filter((course) => {
           // Safely check if class_attributes exists
-          if (course.class_attributes && Array.isArray(course.class_attributes)) {
+          if (
+            course.class_attributes &&
+            Array.isArray(course.class_attributes)
+          ) {
             return course.class_attributes.some((attr) => {
-              console.log("Checking Attribute:", attr?.attribute?.attribute_code);
+              console.log(
+                "Checking Attribute:",
+                attr?.attribute?.attribute_code
+              );
               return attr?.attribute?.attribute_code === selectedGUR.value;
             });
           }
@@ -56,9 +72,15 @@ export function CourseSearch() {
         console.log("Selected GUR:", selectedDelivery.value);
         filteredClasses = filteredClasses.filter((course) => {
           // Safely check if class_attributes exists
-          if (course.class_attributes && Array.isArray(course.class_attributes)) {
+          if (
+            course.class_attributes &&
+            Array.isArray(course.class_attributes)
+          ) {
             return course.class_attributes.some((attr) => {
-              console.log("Checking Attribute:", attr?.attribute?.attribute_code);
+              console.log(
+                "Checking Attribute:",
+                attr?.attribute?.attribute_code
+              );
               return attr?.attribute?.attribute_code === selectedDelivery.value;
             });
           }
@@ -66,7 +88,10 @@ export function CourseSearch() {
         });
       }
 
-      console.log("Filtered Classes:", JSON.stringify(filteredClasses, null, 2)); // Log filtered results
+      console.log(
+        "Filtered Classes:",
+        JSON.stringify(filteredClasses, null, 2)
+      ); // Log filtered results
 
       setClasses(filteredClasses);
     } catch (error) {
@@ -225,14 +250,45 @@ export function CourseSearch() {
                 {classes.map((course) => (
                   <li key={course.id} className="p-2 border-b border-gray-100">
                     <div className="font-medium">
-                      {course.title} - {course.subject} | {course.crn}
-                      <div className="text-sm font-normal flex flex-row items-center">
-                        {course.seats_available} / {course.seats_max} 
-                        <p>&nbsp;Seats Remaining</p>
+                      <p className="flex items-center ">{course.title} - {course.subject}  
+                        <p className="font-normal flex items-center">
+                        &nbsp;|&nbsp;
+                        <p className="hover:text-blue-400 transition-all ease-in-out cursor-pointer">{course.crn}</p>
+                        </p>
+                        
+                      </p>
+                      <div className="text-sm font-normal flex flex-row items-center w-96 justify-between">
+                        <div className="flex items-center">
+                            {course.seats_available} / {course.seats_max}
+                            <p>&nbsp;Seats Remaining</p>
+                        </div>
+                        {/* Days of the week */}
+                        {course.schedules?.map((schedule) => (
+                          <div
+                            key={schedule.id}
+                            className="flex items-center space-x-2"
+                          >
+                            {daysOfWeek.map((day) => {
+                              // If schedule.days[day.key] is true, style it differently
+                              const isActive =
+                                schedule.days?.[day.key] === true;
 
-                        {course.schedules[0].day_block}
+                              return (
+                                <span
+                                  key={day.key}
+                                  className={
+                                    isActive
+                                      ? "font-bold text-neutral-600" // Active day styling
+                                      : "text-gray-400 font-medium" // Inactive day styling
+                                  }
+                                >
+                                  {day.label}
+                                </span>
+                              );
+                            })}
+                          </div>
+                        ))}
                       </div>
-
                       {console.log(course)}
                     </div>
                     <div className="flex flex-col">

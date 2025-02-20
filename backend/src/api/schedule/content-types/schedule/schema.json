@@ -18,11 +18,17 @@
       "target": "api::class.class",
       "inversedBy": "schedules"
     },
+    "start_time": {
+      "type": "string"
+    },
+    "end_time": {
+      "type": "string"
+    },
     "location": {
       "type": "string"
     },
     "days": {
-      "type": "blocks"
+      "type": "json"
     }
   }
 }
