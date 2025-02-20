@@ -165,7 +165,9 @@ export function CourseSearch() {
               </div>
             </div>
             <div className="flex justify-between">
-              <div className="flex flex-col w-[191px]"> {/* Days */}
+              <div className="flex flex-col w-[191px]">
+                {" "}
+                {/* Days */}
                 <h1 className="font-medium text-sm">Days</h1>
                 <div className="flex space-x-4 border border-gray-300 rounded-sm p-1 justify-around">
                   <label className="flex flex-col text-xs items-center font-medium">
@@ -185,7 +187,9 @@ export function CourseSearch() {
                   </label>
                 </div>
               </div>
-              <div className="flex-col"> {/* Time */}
+              <div className="flex-col">
+                {" "}
+                {/* Time */}
                 <div className="flex justify-between space-x-2 min-w-[191px]">
                   <div className="flex flex-col">
                     <h1 className="font-medium text-sm">Start Time</h1>
@@ -222,6 +226,12 @@ export function CourseSearch() {
                   <li key={course.id} className="p-2 border-b border-gray-100">
                     <div className="font-medium">
                       {course.title} - {course.subject}
+                      <div className="text-sm font-normal flex flex-row items-center ">
+                        {course.seats_available} / {course.seats_max} 
+                        <p>&nbsp;Seats Remaining</p>
+                        
+                      </div>
+                      {console.log(course)}
                     </div>
                     <div className="flex flex-col">
                       <h1></h1>
