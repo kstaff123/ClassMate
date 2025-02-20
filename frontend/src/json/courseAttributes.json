@@ -1,5 +1,6 @@
 {
     "gurAttributes": [
+        { "value": "", "label": "None" },
         { "value": "ACGM", "label": "ACGM" },
         { "value": "ACOM", "label": "ACOM" },
         { "value": "BCGM", "label": "BCGM" },
@@ -12,6 +13,7 @@
         { "value": "SSC", "label": "SSC" }
     ],
     "subjects": [
+    { "value": "", "label": "None" },
     { "value": "A/HI", "label": "A/HI" },
     { "value": "ACCT", "label": "ACCT" },
     { "value": "AECI", "label": "AECI" },
@@ -132,5 +134,29 @@
     { "value": "THTR", "label": "THTR" },
     { "value": "UEPP", "label": "UEPP" },
     { "value": "WGSS", "label": "WGSS" }
+    ],
+    "times":
+    [
+        { "value": "08", "label": "8 AM" },
+        { "value": "09", "label": "9 AM" },
+        { "value": "10", "label": "10 AM" },
+        { "value": "11", "label": "11 AM" },
+        { "value": "12", "label": "12 PM" },
+        { "value": "13", "label": "1 PM" },
+        { "value": "14", "label": "2 PM" },
+        { "value": "15", "label": "3 PM" },
+        { "value": "16", "label": "4 PM" },
+        { "value": "17", "label": "5 PM" },
+        { "value": "18", "label": "6 PM" },
+        { "value": "19", "label": "7 PM" },
+        { "value": "20", "label": "8 PM" }
+    ],
+    "deliveryMethods":
+    [
+        { "value": "In Person", "label": "In Person" },
+        { "value": "Online", "label": "Online" },
+        { "value": "Hybrid", "label": "Hybrid" }
     ]
+
 }
+    

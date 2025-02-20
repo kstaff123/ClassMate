@@ -20,7 +20,7 @@ export function CourseBrowser() {
                 <div className="flex-none">
                     <Header />
                 </div>
-                <div className="grid grid-cols-3 items-center grid-flow-col flex-grow p-8 gap-x-8 max-h-screen">
+                <div className="grid grid-cols-3 items-center grid-flow-col flex-grow px-8 gap-x-8 max-h-screen">
                     <div className="bg-white col-span-2 w-full h-[87.5vh] max-h-7/8 rounded-4xl shadow-xl p-4 ">
                         <div className="flex items-center">
                             <h2 className="text-2xl font-medium pr-2">Browse Classes</h2>
