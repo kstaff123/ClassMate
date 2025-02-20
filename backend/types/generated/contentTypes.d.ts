@@ -681,6 +681,7 @@ export interface ApiInstructorInstructor extends Struct.CollectionTypeSchema {
 export interface ApiScheduleSchedule extends Struct.CollectionTypeSchema {
   collectionName: 'schedules';
   info: {
+    description: '';
     displayName: 'Schedules';
     pluralName: 'schedules';
     singularName: 'schedule';
@@ -693,8 +694,7 @@ export interface ApiScheduleSchedule extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    day_block: Schema.Attribute.String;
-    end_time: Schema.Attribute.String;
+    days: Schema.Attribute.Blocks;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -703,7 +703,6 @@ export interface ApiScheduleSchedule extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     location: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
-    start_time: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

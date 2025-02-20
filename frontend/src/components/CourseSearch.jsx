@@ -225,12 +225,14 @@ export function CourseSearch() {
                 {classes.map((course) => (
                   <li key={course.id} className="p-2 border-b border-gray-100">
                     <div className="font-medium">
-                      {course.title} - {course.subject}
-                      <div className="text-sm font-normal flex flex-row items-center ">
+                      {course.title} - {course.subject} | {course.crn}
+                      <div className="text-sm font-normal flex flex-row items-center">
                         {course.seats_available} / {course.seats_max} 
                         <p>&nbsp;Seats Remaining</p>
-                        
+
+                        {course.schedules[0].day_block}
                       </div>
+
                       {console.log(course)}
                     </div>
                     <div className="flex flex-col">

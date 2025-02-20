@@ -4,7 +4,8 @@
   "info": {
     "singularName": "schedule",
     "pluralName": "schedules",
-    "displayName": "Schedules"
+    "displayName": "Schedules",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -17,17 +18,11 @@
       "target": "api::class.class",
       "inversedBy": "schedules"
     },
-    "day_block": {
-      "type": "string"
-    },
-    "start_time": {
-      "type": "string"
-    },
-    "end_time": {
-      "type": "string"
-    },
     "location": {
       "type": "string"
+    },
+    "days": {
+      "type": "blocks"
     }
   }
 }
