@@ -453,8 +453,8 @@ export interface ApiAttributeAttribute extends Struct.CollectionTypeSchema {
     attribute_code: Schema.Attribute.String;
     attribute_name: Schema.Attribute.String;
     attribute_type: Schema.Attribute.String;
-    class_attribute: Schema.Attribute.Relation<
-      'manyToOne',
+    class_attributes: Schema.Attribute.Relation<
+      'oneToMany',
       'api::class-attribute.class-attribute'
     >;
     createdAt: Schema.Attribute.DateTime;
@@ -550,8 +550,8 @@ export interface ApiClassAttributeClassAttribute
     draftAndPublish: true;
   };
   attributes: {
-    attributes: Schema.Attribute.Relation<
-      'oneToMany',
+    attribute: Schema.Attribute.Relation<
+      'manyToOne',
       'api::attribute.attribute'
     >;
     class: Schema.Attribute.Relation<'manyToOne', 'api::class.class'>;

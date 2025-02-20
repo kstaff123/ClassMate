@@ -21,11 +21,11 @@
     "attribute_code": {
       "type": "string"
     },
-    "class_attribute": {
+    "class_attributes": {
       "type": "relation",
-      "relation": "manyToOne",
+      "relation": "oneToMany",
       "target": "api::class-attribute.class-attribute",
-      "inversedBy": "attributes"
+      "mappedBy": "attribute"
     }
   }
 }

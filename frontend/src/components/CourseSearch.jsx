@@ -1,21 +1,81 @@
 import { useState } from "react";
 import Select from "react-select";
 import courseAttributes from "../json/courseAttributes.json";
+import instructorList from "../json/instructors.json";
 import { fetchCourseList } from "../apis/courseFetcher";
+
 export function CourseSearch() {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(false);
-  //search state
+
+  const [selectedGUR, setSelectedGUR] = useState(null);
+  const [selectedSubject, setSelectedSubject] = useState(null);
+  const [selectedDelivery, setSelectedDelivery] = useState(null);
   const [searchInput, setSearchInput] = useState("");
 
   const handleSearch = async () => {
-    setLoading(true); // Start loading
-    const data = await fetchCourseList(); // Fetch API data
-    setClasses(data?.data || []); // Store response in state
-    setLoading(false); // Stop loading
-  };
+    setLoading(true);
 
-  //loading filters
+    try {
+      const data = await fetchCourseList();
+      let filteredClasses = data?.data || [];
+
+      console.log("Raw API Response:", JSON.stringify(filteredClasses, null, 2)); // Log full response
+
+      // Filter by title if searchInput is provided
+      if (searchInput) {
+        filteredClasses = filteredClasses.filter((course) =>
+          course.title.toLowerCase().includes(searchInput.toLowerCase())
+        );
+      }
+
+      // Filter by GUR attribute if selectedGUR is set
+      if (selectedGUR && selectedGUR.value) {
+        console.log("Selected GUR:", selectedGUR.value);
+        filteredClasses = filteredClasses.filter((course) => {
+          // Safely check if class_attributes exists
+          if (course.class_attributes && Array.isArray(course.class_attributes)) {
+            return course.class_attributes.some((attr) => {
+              console.log("Checking Attribute:", attr?.attribute?.attribute_code);
+              return attr?.attribute?.attribute_code === selectedGUR.value;
+            });
+          }
+          return false; // Skip courses without valid class_attributes
+        });
+      }
+
+      // Filter by Subject if selectedSubject is set
+      if (selectedSubject && selectedSubject.value) {
+        filteredClasses = filteredClasses.filter(
+          (course) => course.subject === selectedSubject.value
+        );
+      }
+
+      // Filter by Delivery attribute if selectedDelivery is set
+      if (selectedDelivery && selectedDelivery.value) {
+        console.log("Selected GUR:", selectedDelivery.value);
+        filteredClasses = filteredClasses.filter((course) => {
+          // Safely check if class_attributes exists
+          if (course.class_attributes && Array.isArray(course.class_attributes)) {
+            return course.class_attributes.some((attr) => {
+              console.log("Checking Attribute:", attr?.attribute?.attribute_code);
+              return attr?.attribute?.attribute_code === selectedDelivery.value;
+            });
+          }
+          return false; // Skip courses without valid class_attributes
+        });
+      }
+
+      console.log("Filtered Classes:", JSON.stringify(filteredClasses, null, 2)); // Log filtered results
+
+      setClasses(filteredClasses);
+    } catch (error) {
+      console.error("Error during filtering:", error);
+      setClasses([]); // Clear the class list on error
+    }
+
+    setLoading(false);
+  };
 
   return (
     <div className="flex items-center justify-between gap-4 flex-nowrap w-full">
@@ -41,7 +101,7 @@ export function CourseSearch() {
                 viewBox="0 0 24 24"
                 strokeWidth="1.5"
                 stroke="currentColor"
-                className="size-6 mx-2 stroke-neutral-400 group-hover:stroke-neutral-500 group-focus-within:stroke-neutral-500  hover:stroke-neutral-600 transition-all ease-in-out hover:cursor-pointer stroke-2 flex-shrink-0"
+                className="size-6 mx-2 stroke-neutral-400 group-hover:stroke-neutral-500 group-focus-within:stroke-neutral-500 hover:stroke-neutral-600 transition-all ease-in-out hover:cursor-pointer stroke-2 flex-shrink-0"
                 onClick={handleSearch} // Trigger search on click
               >
                 <path
@@ -65,6 +125,7 @@ export function CourseSearch() {
                   className={"react-select-container"}
                   classNamePrefix={"react-select"}
                   options={courseAttributes["gurAttributes"]}
+                  onChange={setSelectedGUR}
                 />
               </div>
               <div className="flex flex-col">
@@ -75,6 +136,7 @@ export function CourseSearch() {
                   className={"react-select-container"}
                   classNamePrefix={"react-select"}
                   options={courseAttributes["subjects"]}
+                  onChange={setSelectedSubject}
                 />
               </div>
             </div>
@@ -87,7 +149,7 @@ export function CourseSearch() {
                   placeholder=""
                   className={"react-select-container"}
                   classNamePrefix={"react-select"}
-                  options={courseAttributes["gurAttributes"]}
+                  options={instructorList["instructors"]}
                 />
               </div>
               <div className="flex flex-col">
@@ -98,59 +160,59 @@ export function CourseSearch() {
                   className={"react-select-container"}
                   classNamePrefix={"react-select"}
                   options={courseAttributes["deliveryMethods"]}
+                  onChange={setSelectedDelivery}
                 />
               </div>
             </div>
             <div className="flex justify-between">
-                <div className="flex flex-col w-[191px]"> {/* Days */}
-                  <h1 className="font-medium text-sm">Days</h1>
-                  <div className="flex space-x-4 border border-gray-300 rounded-sm p-1 justify-around">
-                    <label className="flex flex-col text-xs items-center font-medium">
-                      M<input className="size-3" type="checkbox"></input>
-                    </label>
-                    <label className="flex flex-col text-xs items-center font-medium">
-                      T<input className="size-3" type="checkbox"></input>
-                    </label>
-                    <label className="flex flex-col text-xs items-center font-medium">
-                      W<input className="size-3" type="checkbox"></input>
-                    </label>
-                    <label className="flex flex-col text-xs items-center font-medium">
-                      T<input className="size-3" type="checkbox"></input>
-                    </label>
-                    <label className="flex flex-col text-xs items-center font-medium">
-                      F<input className="size-3" type="checkbox"></input>
-                    </label>
+              <div className="flex flex-col w-[191px]"> {/* Days */}
+                <h1 className="font-medium text-sm">Days</h1>
+                <div className="flex space-x-4 border border-gray-300 rounded-sm p-1 justify-around">
+                  <label className="flex flex-col text-xs items-center font-medium">
+                    M<input className="size-3" type="checkbox"></input>
+                  </label>
+                  <label className="flex flex-col text-xs items-center font-medium">
+                    T<input className="size-3" type="checkbox"></input>
+                  </label>
+                  <label className="flex flex-col text-xs items-center font-medium">
+                    W<input className="size-3" type="checkbox"></input>
+                  </label>
+                  <label className="flex flex-col text-xs items-center font-medium">
+                    T<input className="size-3" type="checkbox"></input>
+                  </label>
+                  <label className="flex flex-col text-xs items-center font-medium">
+                    F<input className="size-3" type="checkbox"></input>
+                  </label>
+                </div>
+              </div>
+              <div className="flex-col"> {/* Time */}
+                <div className="flex justify-between space-x-2 min-w-[191px]">
+                  <div className="flex flex-col">
+                    <h1 className="font-medium text-sm">Start Time</h1>
+                    <Select
+                      isSearchable="false"
+                      placeholder=""
+                      className={"react-select-container"}
+                      classNamePrefix={"react-time"}
+                      options={courseAttributes["times"]}
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <h1 className="font-medium text-sm">End Time</h1>
+                    <Select
+                      isSearchable="false"
+                      placeholder=""
+                      className={"react-select-container"}
+                      classNamePrefix={"react-time"}
+                      options={courseAttributes["times"]}
+                    />
                   </div>
                 </div>
-                <div className="flex-col"> {/* Time */}
-              
-              
-              <div className="flex justify-between space-x-2 min-w-[191px]">
-                  <div className="flex flex-col">
-                  <h1 className="font-medium text-sm">Start Time</h1>
-                      <Select
-                          isSearchable="false"
-                          placeholder=""
-                          className={"react-select-container"}
-                          classNamePrefix={"react-time"}
-                          options={courseAttributes["times"]}
-                        />
-                  </div>
-                    <div className="flex flex-col">
-                    <h1 className="font-medium text-sm">End Time</h1>
-                        <Select
-                          isSearchable="false"
-                          placeholder=""
-                          className={"react-select-container"}
-                          classNamePrefix={"react-time"}
-                          options={courseAttributes["times"]}
-                        />
-                    </div>
               </div>
-            </div>
             </div>
           </div>
         </div>
+
         {/* Scrollable Container */}
         <div className="flex flex-col mt-4 max-h-72 border border-gray-300 rounded-md overflow-y-scroll">
           <div className="font-semibold text-base">

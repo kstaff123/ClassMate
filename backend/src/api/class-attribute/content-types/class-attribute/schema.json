@@ -18,11 +18,11 @@
       "target": "api::class.class",
       "inversedBy": "class_attributes"
     },
-    "attributes": {
+    "attribute": {
       "type": "relation",
-      "relation": "oneToMany",
+      "relation": "manyToOne",
       "target": "api::attribute.attribute",
-      "mappedBy": "class_attribute"
+      "inversedBy": "class_attributes"
     }
   }
 }
