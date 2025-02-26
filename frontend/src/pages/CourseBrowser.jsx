@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Header } from "../components/Header";
 import { fetchCourseList } from "../apis/courseFetcher";
 import { CourseSearch } from "../components/CourseSearch";
+import { Cart } from "../components/Cart";
 
 export function CourseBrowser() {
 
@@ -53,11 +54,16 @@ export function CourseBrowser() {
 
                     </div>
                     <div className="bg-white col-span-1 w-full h-7/8 rounded-4xl shadow-xl">
-                        <div className="flex items-center p-4">
+                        <div className="flex p-4 flex-col">
                             <h2 className="text-2xl font-medium">Class Cart</h2>
+                            <div className="">
+                                <Cart/>
+                            </div>
+                            
                         </div>
                     </div>
                 </div>
             </main>
     );
 }
+ 

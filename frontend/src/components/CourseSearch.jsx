@@ -3,9 +3,11 @@ import Select from "react-select";
 import courseAttributes from "../json/courseAttributes.json";
 import instructorList from "../json/instructors.json";
 import { fetchCourseList } from "../apis/courseFetcher";
-import CopyButton from "./CopyButton";
+import CopyPopover from "./CopyPopover";
+import { useCart } from "./CartContext";
 
 export function CourseSearch() {
+  const { addToCart } = useCart();
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -250,28 +252,49 @@ export function CourseSearch() {
                 {classes.map((course) => (
                   <li key={course.id} className="p-2 border-b border-gray-100">
                     <div className="font-medium">
-                      <p className="flex items-center ">{course.title} - {course.subject}  
-                        <p className="font-normal flex items-center">
-                        &nbsp;|&nbsp;
-                        <p className="hover:text-blue-400 transition-all ease-in-out cursor-pointer">{course.crn}</p>
+                      <div className="flex items-center justify-between">
+                        <p className="flex items-center ">
+                          {course.title}
+                          <p className="font-normal flex items-center">
+                            &nbsp;|&nbsp;
+                            <div className="hover:text-blue-400">
+                              <CopyPopover crn={course.crn} />
+                            </div>
+                          </p>
                         </p>
-                        
-                      </p>
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="size-6 hover:stroke-neutral-600 transition-all ease-in-out stroke-neutral-400 group-hover:stroke-neutral-500 group-focus-within:stroke-neutral-500 hover:cursor-pointer"
+                          alt="plus icon"
+                          onClick={() => addToCart(course)}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                          />
+                        </svg>
+                      </div>
                       <div className="text-sm font-normal flex flex-row items-center w-96 justify-between">
                         <div className="flex items-center">
-                            {course.seats_available} / {course.seats_max}
-                            <p>&nbsp;Seats Remaining</p>
+                          {course.seats_available} / {course.seats_max}
+                          <p>&nbsp;Seats Remaining</p>
                         </div>
+                      </div>
+                      <div className="flex items-center font-normal text-sm space-x-2 ">
                         {/* Days of the week */}
-                        {course.schedules?.map((schedule) => (
-                          <div
-                            key={schedule.id}
-                            className="flex items-center space-x-2"
-                          >
+                        {/* Only display the first schedule */}
+
+                        {course.schedules.length > 0 && (
+                          <div className="flex items-center space-x-2">
                             {daysOfWeek.map((day) => {
-                              // If schedule.days[day.key] is true, style it differently
+                              const firstSchedule = course.schedules[0]; // Get only the first schedule
                               const isActive =
-                                schedule.days?.[day.key] === true;
+                                firstSchedule.days?.[day.key] === true;
 
                               return (
                                 <span
@@ -287,8 +310,47 @@ export function CourseSearch() {
                               );
                             })}
                           </div>
-                        ))}
+                        )}
+                        <p className="text-sm">|</p>
+                        <p>
+                          {course.schedules[0].start_time}-
+                          {course.schedules[0].end_time}
+                        </p>
                       </div>
+                      <div className="flex items-center font-normal text-sm space-x-2">
+                        {/* second schedule */}
+                        {course.schedules.length > 1 ? (
+                          <div className="flex items-center space-x-2">
+                            {daysOfWeek.map((day) => {
+                              const secondSchedule = course.schedules[1]; // Get the second schedule
+                              const isActive =
+                                secondSchedule.days?.[day.key] === true;
+                              return (
+                                <span
+                                  key={day.key}
+                                  className={
+                                    isActive
+                                      ? "font-bold text-neutral-600" // Active day styling
+                                      : "text-gray-400 font-medium" // Inactive day styling
+                                  }
+                                >
+                                  {day.label}
+                                </span>
+                              );
+                            })}
+                            <div className="flex items-center space-x-2">
+                              <p>|</p>
+                              <div>
+                                {course.schedules[1]?.start_time}-
+                                {course.schedules[1]?.end_time}
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div>No Lab Section</div>
+                        )}
+                      </div>
+
                       {console.log(course)}
                     </div>
                     <div className="flex flex-col">
