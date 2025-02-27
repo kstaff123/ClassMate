@@ -137,6 +137,7 @@
     ],
     "times":
     [
+        {"value": "", "label": "None"},
         { "value": "08", "label": "8 AM" },
         { "value": "09", "label": "9 AM" },
         { "value": "10", "label": "10 AM" },
@@ -153,6 +154,7 @@
     ],
     "deliveryMethods":
     [
+        { "value": "", "label": "None" },
         { "value": "Face-to-Face", "label": "Face-to-Face" },
         { "value": "Online", "label": "Online" },
         { "value": "Hybrid", "label": "Hybrid" }

@@ -1,6 +1,10 @@
 {
   "instructors": [
     {
+      "value": "",
+      "label": "None"
+    },
+    {
       "value": "Abdelrhman, Samir",
       "label": "Abdelrhman, Samir"
     },
