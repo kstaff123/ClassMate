@@ -315,8 +315,8 @@ export function CourseSearch() {
                         )}
                         <p className="text-sm">|</p>
                         <p>
-                          {course.schedules[0].start_time}-
-                          {course.schedules[0].end_time}
+                          {course.schedules[0]?.start_time}-
+                          {course.schedules[0]?.end_time}
                         </p>
                       </div>
                       <div className="flex items-center font-normal text-sm space-x-2">

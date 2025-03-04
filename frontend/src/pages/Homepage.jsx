@@ -16,7 +16,7 @@ export function Homepage() {
             <h2 class="text-2xl font-medium">Schedule</h2>
             <div
               id="scrollable-container"
-              className="mx-.9 overflow-y-scroll overflow-x-hidden"
+              className="mx-.9 overflow-y-scroll overflow-x-hidden rounded-xl"
             >
               <Schedule />
             </div>
