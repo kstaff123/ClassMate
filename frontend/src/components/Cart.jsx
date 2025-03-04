@@ -60,11 +60,14 @@ export function Cart() {
                   </div>
                   <div className="flex items-center space-x-1">
                     <p>
-                      {(() => {
-                        const [lastName, firstName] =
-                          course.instructors[0].name.split(", ");
-                        return `${firstName} ${lastName}`;
-                      })()}
+                    {(() => {
+                              const instructorName = course.instructors?.[0]?.name;
+                              if (instructorName) {
+                                const [lastName, firstName] = instructorName.split(", ");
+                                return `${firstName} ${lastName}`;
+                              }
+                              return "Instructor TBA";
+                            })()}
                     </p>
                     <p className="text-sm">|</p>
                               <p>

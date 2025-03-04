@@ -38,13 +38,17 @@ export function CourseSearch() {
   const [selectedGUR, setSelectedGUR] = useState(null);
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [selectedDelivery, setSelectedDelivery] = useState(null);
+  const [selectedInstructor, setSelectedInstructor] = useState(null);
+  const [selectedDays, setSelectedDays] = useState([]);
+  const [selectedStartTime, setSelectedStartTime] = useState(null);
+  const [selectedEndTime, setSelectedEndTime] = useState(null);
   const [searchInput, setSearchInput] = useState("");
 
   // Reset page to 1 whenever any filter parameter changes
   useEffect(() => {
     setPage(1);
     setPageInput("1");
-  }, [searchInput, selectedGUR, selectedSubject, selectedDelivery]);
+  }, [searchInput, selectedGUR, selectedSubject, selectedDelivery, selectedInstructor, selectedDays, selectedStartTime, selectedEndTime]);
 
   // Save search state to localStorage
   useEffect(() => {
@@ -54,6 +58,10 @@ export function CourseSearch() {
       selectedGUR,
       selectedSubject,
       selectedDelivery,
+      selectedInstructor,
+      selectedDays,
+      selectedStartTime,
+      selectedEndTime,
       searchInput,
     };
     localStorage.setItem("courseSearchState", JSON.stringify(searchState));
@@ -63,6 +71,10 @@ export function CourseSearch() {
     selectedGUR,
     selectedSubject,
     selectedDelivery,
+    selectedInstructor,
+    selectedDays,
+    selectedStartTime,
+    selectedEndTime,
     searchInput,
   ]);
 
@@ -85,6 +97,10 @@ export function CourseSearch() {
         selectedSubject: selectedSubject?.value,
         selectedGUR: selectedGUR?.value,
         selectedDelivery: selectedDelivery?.value,
+        selectedInstructor: selectedInstructor?.value,
+        selectedDays: selectedDays,
+        selectedStartTime: selectedStartTime?.value,
+        selectedEndTime: selectedEndTime?.value,
       };
 
       // Fetch data with pagination and filters
@@ -114,7 +130,7 @@ export function CourseSearch() {
   useEffect(() => {
     handleSearch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, searchInput, selectedGUR, selectedSubject, selectedDelivery]);
+  }, [page, searchInput, selectedGUR, selectedSubject, selectedDelivery, selectedInstructor, selectedDays, selectedStartTime, selectedEndTime]);
 
   const handleNextPage = () => {
     if (page < totalPages) {
@@ -234,6 +250,7 @@ export function CourseSearch() {
                   className="react-select-container"
                   classNamePrefix="react-select"
                   options={instructorList["instructors"]}
+                  onChange={setSelectedInstructor}
                 />
               </div>
               {/* Delivery Method */}
@@ -253,19 +270,25 @@ export function CourseSearch() {
               <div className="flex flex-col w-[191px]">
                 <h1 className="font-medium text-sm">Days</h1>
                 <div className="flex space-x-4 border border-gray-300 rounded-sm p-1 justify-around">
-                  {[
-                    { key: "monday", label: "M" },
-                    { key: "tuesday", label: "T" },
-                    { key: "wednesday", label: "W" },
-                    { key: "thursday", label: "T" },
-                    { key: "friday", label: "F" },
-                  ].map((day) => (
+                  {daysOfWeek.map((day) => (
                     <label
                       key={day.key}
                       className="flex flex-col text-xs items-center font-medium"
                     >
                       {day.label}
-                      <input className="size-3" type="checkbox" />
+                      <input
+                        className="size-3"
+                        type="checkbox"
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedDays((prev) => [...prev, day]);
+                          } else {
+                            setSelectedDays((prev) =>
+                              prev.filter((d) => d.key !== day.key)
+                            );
+                          }
+                        }}
+                      />
                     </label>
                   ))}
                 </div>
@@ -280,6 +303,7 @@ export function CourseSearch() {
                       className="react-select-container"
                       classNamePrefix="react-time"
                       options={courseAttributes["times"]}
+                      onChange={setSelectedStartTime}
                     />
                   </div>
                   <div className="flex flex-col">
@@ -290,6 +314,7 @@ export function CourseSearch() {
                       className="react-select-container"
                       classNamePrefix="react-time"
                       options={courseAttributes["times"]}
+                      onChange={setSelectedEndTime}
                     />
                   </div>
                 </div>
@@ -372,9 +397,12 @@ export function CourseSearch() {
                           <div className="font-medium">
                             &nbsp;|&nbsp;
                             {(() => {
-                              const [lastName, firstName] =
-                                course.instructors[0].name.split(", ");
-                              return `${firstName} ${lastName}`;
+                              const instructorName = course.instructors?.[0]?.name;
+                              if (instructorName) {
+                                const [lastName, firstName] = instructorName.split(", ");
+                                return `${firstName} ${lastName}`;
+                              }
+                              return "Instructor TBA";
                             })()}
                           </div>
                         </div>
@@ -438,8 +466,16 @@ export function CourseSearch() {
                             <div className="flex items-center space-x-2">
                               <p>|</p>
                               <div>
-                                {course.schedules[1]?.start_time} -{" "}
-                                {course.schedules[1]?.end_time}
+                              {course.schedules && course.schedules.length > 1
+                            ? course.schedules[1]?.start_time === "TBA" ||
+                              course.schedules[1]?.end_time === "TBA"
+                              ? "TBA"
+                              : `${convert24hourTo12hour(
+                                  course.schedules[1]?.start_time
+                                )} - ${convert24hourTo12hour(
+                                  course.schedules[1]?.end_time
+                                )}`
+                            : "No schedule data"}
                               </div>
                             </div>
                           </div>

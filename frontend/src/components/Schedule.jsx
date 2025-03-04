@@ -57,6 +57,7 @@ export function Schedule() {
 
   // For row resizing
   const [rowHeight, setRowHeight] = useState(64);
+  const [paddingHours, setPaddingHours] = useState(0); // State for padding hours
   const resizeData = useRef({ startY: 0, startHeight: rowHeight });
   const handleMouseDown = (e) => {
     document.body.style.userSelect = "none";
@@ -95,7 +96,7 @@ export function Schedule() {
   cart.forEach((course) => {
     if (!course.schedules) return;
     course.schedules.forEach((sched) => {
-      if (!sched.days) return;
+      if (!sched.days || sched.start_time === "TBA" || sched.end_time === "TBA") return;
       const hour12starttime = convert24hourTo12hour(sched.start_time);
       const hour12endtime = convert24hourTo12hour(sched.end_time);
       const startFloat = parseTimeToFloat(hour12starttime || "7:00am");
@@ -142,10 +143,16 @@ export function Schedule() {
   });
 
   useEffect(() => {
+    const totalHours = maxEnd - minStart; // Add padding hours
+    const newHeight = Math.max(30, Math.min(48, 1024 / totalHours));
+    setRowHeight(newHeight);
+  }, [minStart, maxEnd, paddingHours]);
+
+  useEffect(() => {
     if (classCount > 0) {
       const avgStart = totalStart / classCount;
       const avgEnd = totalEnd / classCount;
-      const middleTimeIndex = Math.floor((avgStart + avgEnd) / 2);
+      const middleTimeIndex = Math.floor((avgStart + avgEnd) / 2) - 1;
       const middleTimeElement = scheduleRef.current.querySelector(
         `div[data-time-index="${middleTimeIndex}"]`
       );
@@ -155,11 +162,7 @@ export function Schedule() {
     }
   }, [cart, totalStart, totalEnd, classCount]);
 
-  useEffect(() => {
-    const totalHours = maxEnd - minStart;
-    const newHeight = Math.max(30, Math.min(64, 1024 / totalHours));
-    setRowHeight(newHeight);
-  }, [minStart, maxEnd]);
+
 
   return (
     <div className="flex w-full text-sm">
@@ -216,7 +219,7 @@ export function Schedule() {
             >
               {timeLabel}
               <div
-                className="absolute bottom-0 left: 0 right-0 h-2 cursor-ns-resize"
+                className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize"
                 onMouseDown={handleMouseDown}
               />
             </div>
