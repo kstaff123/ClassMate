@@ -16,11 +16,13 @@ export function CourseSearch() {
   const [selectedDelivery, setSelectedDelivery] = useState(null);
   const [searchInput, setSearchInput] = useState("");
   const daysOfWeek = [
+    { key : "sunday", label: "S" },
     { key: "monday", label: "M" },
     { key: "tuesday", label: "T" },
     { key: "wednesday", label: "W" },
     { key: "thursday", label: "T" },
     { key: "friday", label: "F" },
+    { key : "saturday", label: "S" },
   ];
   const handleSearch = async () => {
     setLoading(true);
