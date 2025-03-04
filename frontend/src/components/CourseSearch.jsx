@@ -6,11 +6,26 @@ import { fetchCourseList } from "../apis/courseFetcher";
 import CopyPopover from "./CopyPopover";
 import { useCart } from "./CartContext";
 
+function convert24hourTo12hour(time24) {
+  const [hourStr, minute] = time24.split(":");
+  let hour = parseInt(hourStr, 10);
+  const ampm = hour >= 12 ? "pm" : "am";
+  
+  // Convert hour into 12-hour format
+  if (hour === 0) {
+    hour = 12;
+  } else if (hour > 12) {
+    hour -= 12;
+  }
+  
+  return `${hour}:${minute}${ampm}`;
+}
+
 export function CourseSearch() {
   const { addToCart } = useCart();
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(false);
-  
+
   // Pagination state with lazy initialization
   const [page, setPage] = useState(() => {
     const savedState = localStorage.getItem("courseSearchState");
@@ -42,7 +57,14 @@ export function CourseSearch() {
       searchInput,
     };
     localStorage.setItem("courseSearchState", JSON.stringify(searchState));
-  }, [classes, page, selectedGUR, selectedSubject, selectedDelivery, searchInput]);
+  }, [
+    classes,
+    page,
+    selectedGUR,
+    selectedSubject,
+    selectedDelivery,
+    searchInput,
+  ]);
 
   const daysOfWeek = [
     { key: "sunday", label: "S" },
@@ -76,7 +98,10 @@ export function CourseSearch() {
         setTotalPages(1);
       }
 
-      console.log("Raw API Response:", JSON.stringify(filteredClasses, null, 2));
+      console.log(
+        "Raw API Response:",
+        JSON.stringify(filteredClasses, null, 2)
+      );
       setClasses(filteredClasses);
     } catch (error) {
       console.error("Error during filtering:", error);
@@ -101,7 +126,7 @@ export function CourseSearch() {
 
   const handlePrevPage = () => {
     setPage((prev) => Math.max(prev - 1, 1));
-    setPageInput((prev) => (Math.max(parseInt(prev, 10) - 1, 1)).toString());
+    setPageInput((prev) => Math.max(parseInt(prev, 10) - 1, 1).toString());
     window.scrollTo(0, 0); // Scroll to top
   };
 
@@ -235,7 +260,10 @@ export function CourseSearch() {
                     { key: "thursday", label: "T" },
                     { key: "friday", label: "F" },
                   ].map((day) => (
-                    <label key={day.key} className="flex flex-col text-xs items-center font-medium">
+                    <label
+                      key={day.key}
+                      className="flex flex-col text-xs items-center font-medium"
+                    >
                       {day.label}
                       <input className="size-3" type="checkbox" />
                     </label>
@@ -307,14 +335,18 @@ export function CourseSearch() {
                           {course.title}
                           <p className="font-normal flex items-center">
                             &nbsp;|&nbsp;
-                            <div className="font-normal ">{course.subject}&nbsp;{course.class_number}</div>
-                            <div className="font-normal flex items-center ">&nbsp;|&nbsp;</div>
+                            <div className="font-normal ">
+                              {course.subject}&nbsp;{course.class_number}
+                            </div>
+                            <div className="font-normal flex items-center ">
+                              &nbsp;|&nbsp;
+                            </div>
                             <div className="hover:text-blue-400">
                               <CopyPopover crn={course.crn} />
                             </div>
                           </p>
                         </p>
-                        <svg 
+                        <svg
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
                           viewBox="0 0 24 24"
@@ -331,10 +363,20 @@ export function CourseSearch() {
                           />
                         </svg>
                       </div>
-                      <div className="text-sm font-normal flex flex-row items-center w-96 justify-between">
+                      <div className="text-sm font-normal flex flex-row items-center w-fit justify-between">
                         <div className="flex items-center">
-                          {course.seats_available} / {course.seats_max}
+                          <div className="font-medium">
+                            {course.seats_available} / {course.seats_max}
+                          </div>
                           <p>&nbsp;Seats Remaining</p>
+                          <div className="font-medium">
+                            &nbsp;|&nbsp;
+                            {(() => {
+                              const [lastName, firstName] =
+                                course.instructors[0].name.split(", ");
+                              return `${firstName} ${lastName}`;
+                            })()}
+                          </div>
                         </div>
                       </div>
                       <div className="flex items-center font-normal text-sm space-x-2 ">
@@ -342,7 +384,8 @@ export function CourseSearch() {
                           <div className="flex items-center space-x-2">
                             {daysOfWeek.map((day) => {
                               const firstSchedule = course.schedules[0];
-                              const isActive = firstSchedule.days?.[day.key] === true;
+                              const isActive =
+                                firstSchedule.days?.[day.key] === true;
                               return (
                                 <span
                                   key={day.key}
@@ -361,7 +404,14 @@ export function CourseSearch() {
                         <p className="text-sm">|</p>
                         <p>
                           {course.schedules && course.schedules.length > 0
-                            ? `${course.schedules[0]?.start_time} - ${course.schedules[0]?.end_time}`
+                            ? course.schedules[0]?.start_time === "TBA" ||
+                              course.schedules[0]?.end_time === "TBA"
+                              ? "TBA"
+                              : `${convert24hourTo12hour(
+                                  course.schedules[0]?.start_time
+                                )} - ${convert24hourTo12hour(
+                                  course.schedules[0]?.end_time
+                                )}`
                             : "No schedule data"}
                         </p>
                       </div>
@@ -370,7 +420,8 @@ export function CourseSearch() {
                           <div className="flex items-center space-x-2">
                             {daysOfWeek.map((day) => {
                               const secondSchedule = course.schedules[1];
-                              const isActive = secondSchedule.days?.[day.key] === true;
+                              const isActive =
+                                secondSchedule.days?.[day.key] === true;
                               return (
                                 <span
                                   key={day.key}
@@ -387,7 +438,8 @@ export function CourseSearch() {
                             <div className="flex items-center space-x-2">
                               <p>|</p>
                               <div>
-                                {course.schedules[1]?.start_time} - {course.schedules[1]?.end_time}
+                                {course.schedules[1]?.start_time} -{" "}
+                                {course.schedules[1]?.end_time}
                               </div>
                             </div>
                           </div>
@@ -408,8 +460,8 @@ export function CourseSearch() {
 
         {/* Pagination Controls */}
         <div className="flex justify-center mt-4 text-base font-normal flex-nowrap">
-          <button 
-            onClick={handlePrevPage} 
+          <button
+            onClick={handlePrevPage}
             disabled={page === 1}
             className="px-2 py-2 bg-gray-200 rounded-l hover:bg-gray-300 disabled:opacity-50 transition-all ease-in-out flex-nowrap"
           >
@@ -429,10 +481,12 @@ export function CourseSearch() {
               size={3}
             />
             <div>/</div>
-            <div className="flex flex-nowrap min-w-[33px] text-center justify-center">{totalPages}</div>
+            <div className="flex flex-nowrap min-w-[33px] text-center justify-center">
+              {totalPages}
+            </div>
           </div>
-          <button 
-            onClick={handleNextPage} 
+          <button
+            onClick={handleNextPage}
             disabled={page >= totalPages}
             className="px-2 py-2 bg-gray-200 rounded-r hover:bg-gray-300 disabled:opacity-50 transition-all ease-in-out"
           >

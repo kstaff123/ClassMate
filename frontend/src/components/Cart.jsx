@@ -1,6 +1,21 @@
 import { useCart } from "./CartContext";
 import CopyPopover from "./CopyPopover";
 
+function convert24hourTo12hour(time24) {
+  const [hourStr, minute] = time24.split(":");
+  let hour = parseInt(hourStr, 10);
+  const ampm = hour >= 12 ? "pm" : "am";
+  
+  // Convert hour into 12-hour format
+  if (hour === 0) {
+    hour = 12;
+  } else if (hour > 12) {
+    hour -= 12;
+  }
+  
+  return `${hour}:${minute}${ampm}`;
+}
+
 export function Cart() {
   const { cart, removeFromCart } = useCart();
 
@@ -43,13 +58,28 @@ export function Cart() {
                       />
                     </svg>
                   </div>
-                  <p>
-                    {(() => {
-                      const [lastName, firstName] =
-                        course.instructors[0].name.split(", ");
-                      return `${firstName} ${lastName}`;
-                    })()}
-                  </p>
+                  <div className="flex items-center space-x-1">
+                    <p>
+                      {(() => {
+                        const [lastName, firstName] =
+                          course.instructors[0].name.split(", ");
+                        return `${firstName} ${lastName}`;
+                      })()}
+                    </p>
+                    <p className="text-sm">|</p>
+                              <p>
+                              {course.schedules && course.schedules.length > 0
+                            ? course.schedules[0]?.start_time === "TBA" ||
+                              course.schedules[0]?.end_time === "TBA"
+                              ? "TBA"
+                              : `${convert24hourTo12hour(
+                                  course.schedules[0]?.start_time
+                                )} - ${convert24hourTo12hour(
+                                  course.schedules[0]?.end_time
+                                )}`
+                            : "No schedule data"}
+                              </p>
+                  </div>
                 </div>
               </li>
             </div>

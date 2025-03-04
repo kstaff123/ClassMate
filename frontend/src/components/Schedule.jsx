@@ -1,5 +1,5 @@
 import "../App.css";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useCart } from "./CartContext";
 
 // If your schedule uses day booleans like "monday: true":
@@ -12,6 +12,21 @@ const dayNameMap = {
   Fri: "friday",
   Sat: "saturday",
 };
+
+function convert24hourTo12hour(time24) {
+  const [hourStr, minute] = time24.split(":");
+  let hour = parseInt(hourStr, 10);
+  const ampm = hour >= 12 ? "pm" : "am";
+  
+  // Convert hour into 12-hour format
+  if (hour === 0) {
+    hour = 12;
+  } else if (hour > 12) {
+    hour -= 12;
+  }
+  
+  return `${hour}:${minute}${ampm}`;
+}
 
 function parseTimeToFloat(timeStr) {
   // e.g. "3:00pm" => 8.0, "4:50pm" => 9.83
@@ -29,6 +44,7 @@ function parseTimeToFloat(timeStr) {
 
 export function Schedule() {
   const { cart } = useCart();
+  const scheduleRef = useRef(null);
 
   // 7 columns for days, 17 rows for times (7am–11pm)
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -70,12 +86,25 @@ export function Schedule() {
    *  - startCell, endCell.
    */
   const occupiedCells = {};
+  let totalStart = 0;
+  let totalEnd = 0;
+  let classCount = 0;
+  let minStart = 16; // 11pm
+  let maxEnd = 0; // 7am
+
   cart.forEach((course) => {
     if (!course.schedules) return;
     course.schedules.forEach((sched) => {
       if (!sched.days) return;
-      const startFloat = parseTimeToFloat(sched.start_time || "7:00am");
-      const endFloat = parseTimeToFloat(sched.end_time || "11:00pm");
+      const hour12starttime = convert24hourTo12hour(sched.start_time);
+      const hour12endtime = convert24hourTo12hour(sched.end_time);
+      const startFloat = parseTimeToFloat(hour12starttime || "7:00am");
+      const endFloat = parseTimeToFloat(hour12endtime || "11:00pm");
+      totalStart += startFloat;
+      totalEnd += endFloat;
+      classCount++;
+      minStart = Math.min(minStart, startFloat);
+      maxEnd = Math.max(maxEnd, endFloat);
       days.forEach((label, dayIndex) => {
         const dayKey = dayNameMap[label];
         if (!dayKey || !sched.days[dayKey]) return;
@@ -112,11 +141,32 @@ export function Schedule() {
     });
   });
 
+  useEffect(() => {
+    if (classCount > 0) {
+      const avgStart = totalStart / classCount;
+      const avgEnd = totalEnd / classCount;
+      const middleTimeIndex = Math.floor((avgStart + avgEnd) / 2);
+      const middleTimeElement = scheduleRef.current.querySelector(
+        `div[data-time-index="${middleTimeIndex}"]`
+      );
+      if (middleTimeElement) {
+        middleTimeElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  }, [cart, totalStart, totalEnd, classCount]);
+
+  useEffect(() => {
+    const totalHours = maxEnd - minStart;
+    const newHeight = Math.max(30, Math.min(64, 1024 / totalHours));
+    setRowHeight(newHeight);
+  }, [minStart, maxEnd]);
+
   return (
     <div className="flex w-full text-sm">
       <div
         className="grid w-full"
         style={{ gridTemplateColumns: "40px repeat(7, 1fr)" }}
+        ref={scheduleRef}
       >
         {/* Header Row */}
         <div
@@ -162,10 +212,11 @@ export function Schedule() {
                 height: rowHeight,
                 borderTop: "1px solid #ccc",
               }}
+              data-time-index={hourIndex}
             >
               {timeLabel}
               <div
-                className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize"
+                className="absolute bottom-0 left: 0 right-0 h-2 cursor-ns-resize"
                 onMouseDown={handleMouseDown}
               />
             </div>
