@@ -21,6 +21,8 @@ export function Cart() {
                     <div className="space-x-1 flex items-center">
                       <p className="text-base">{course.title}</p>
                       <p>|</p>
+                      <div className="font-medium ">{course.subject}&nbsp;{course.class_number}</div>
+                      <div className="font-normal flex items-center ">|</div>
                       <div className="hover:text-gray-200">
                         <CopyPopover crn={course.crn} />
                       </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Select from "react-select";
 import courseAttributes from "../json/courseAttributes.json";
 import instructorList from "../json/instructors.json";
@@ -10,111 +10,141 @@ export function CourseSearch() {
   const { addToCart } = useCart();
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(false);
+  
+  // Pagination state with lazy initialization
+  const [page, setPage] = useState(() => {
+    const savedState = localStorage.getItem("courseSearchState");
+    return savedState ? JSON.parse(savedState).page : 1;
+  });
+  const [pageInput, setPageInput] = useState(page.toString());
+  const pageSize = 10; // adjust as needed
+  const [totalPages, setTotalPages] = useState(1);
 
   const [selectedGUR, setSelectedGUR] = useState(null);
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [selectedDelivery, setSelectedDelivery] = useState(null);
   const [searchInput, setSearchInput] = useState("");
+
+  // Reset page to 1 whenever any filter parameter changes
+  useEffect(() => {
+    setPage(1);
+    setPageInput("1");
+  }, [searchInput, selectedGUR, selectedSubject, selectedDelivery]);
+
+  // Save search state to localStorage
+  useEffect(() => {
+    const searchState = {
+      classes,
+      page,
+      selectedGUR,
+      selectedSubject,
+      selectedDelivery,
+      searchInput,
+    };
+    localStorage.setItem("courseSearchState", JSON.stringify(searchState));
+  }, [classes, page, selectedGUR, selectedSubject, selectedDelivery, searchInput]);
+
   const daysOfWeek = [
-    { key : "sunday", label: "S" },
+    { key: "sunday", label: "S" },
     { key: "monday", label: "M" },
     { key: "tuesday", label: "T" },
     { key: "wednesday", label: "W" },
     { key: "thursday", label: "T" },
     { key: "friday", label: "F" },
-    { key : "saturday", label: "S" },
+    { key: "saturday", label: "S" },
   ];
+
   const handleSearch = async () => {
     setLoading(true);
-
     try {
-      const data = await fetchCourseList();
+      // Build filters object
+      const filters = {
+        searchInput: searchInput || undefined,
+        selectedSubject: selectedSubject?.value,
+        selectedGUR: selectedGUR?.value,
+        selectedDelivery: selectedDelivery?.value,
+      };
+
+      // Fetch data with pagination and filters
+      const data = await fetchCourseList(page, pageSize, filters);
       let filteredClasses = data?.data || [];
 
-      console.log(
-        "Raw API Response:",
-        JSON.stringify(filteredClasses, null, 2)
-      ); // Log full response
-
-      // Filter by title if searchInput is provided
-      if (searchInput) {
-        filteredClasses = filteredClasses.filter((course) =>
-          course.title.toLowerCase().includes(searchInput.toLowerCase())
-        );
+      // Update totalPages based on API metadata (adjust property names per your API)
+      if (data?.meta?.pagination?.pageCount) {
+        setTotalPages(data.meta.pagination.pageCount);
+      } else {
+        setTotalPages(1);
       }
 
-      // Filter by GUR attribute if selectedGUR is set
-      if (selectedGUR && selectedGUR.value) {
-        console.log("Selected GUR:", selectedGUR.value);
-        filteredClasses = filteredClasses.filter((course) => {
-          // Safely check if class_attributes exists
-          if (
-            course.class_attributes &&
-            Array.isArray(course.class_attributes)
-          ) {
-            return course.class_attributes.some((attr) => {
-              console.log(
-                "Checking Attribute:",
-                attr?.attribute?.attribute_code
-              );
-              return attr?.attribute?.attribute_code === selectedGUR.value;
-            });
-          }
-          return false; // Skip courses without valid class_attributes
-        });
-      }
-
-      // Filter by Subject if selectedSubject is set
-      if (selectedSubject && selectedSubject.value) {
-        filteredClasses = filteredClasses.filter(
-          (course) => course.subject === selectedSubject.value
-        );
-      }
-
-      // Filter by Delivery attribute if selectedDelivery is set
-      if (selectedDelivery && selectedDelivery.value) {
-        console.log("Selected GUR:", selectedDelivery.value);
-        filteredClasses = filteredClasses.filter((course) => {
-          // Safely check if class_attributes exists
-          if (
-            course.class_attributes &&
-            Array.isArray(course.class_attributes)
-          ) {
-            return course.class_attributes.some((attr) => {
-              console.log(
-                "Checking Attribute:",
-                attr?.attribute?.attribute_code
-              );
-              return attr?.attribute?.attribute_code === selectedDelivery.value;
-            });
-          }
-          return false; // Skip courses without valid class_attributes
-        });
-      }
-
-      console.log(
-        "Filtered Classes:",
-        JSON.stringify(filteredClasses, null, 2)
-      ); // Log filtered results
-
+      console.log("Raw API Response:", JSON.stringify(filteredClasses, null, 2));
       setClasses(filteredClasses);
     } catch (error) {
       console.error("Error during filtering:", error);
-      setClasses([]); // Clear the class list on error
+      setClasses([]);
     }
-
     setLoading(false);
+  };
+
+  // Trigger search on initial mount and whenever page or filters change.
+  useEffect(() => {
+    handleSearch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, searchInput, selectedGUR, selectedSubject, selectedDelivery]);
+
+  const handleNextPage = () => {
+    if (page < totalPages) {
+      setPage((prev) => prev + 1);
+      setPageInput((prev) => (parseInt(prev, 10) + 1).toString());
+      window.scrollTo(0, 0); // Scroll to top
+    }
+  };
+
+  const handlePrevPage = () => {
+    setPage((prev) => Math.max(prev - 1, 1));
+    setPageInput((prev) => (Math.max(parseInt(prev, 10) - 1, 1)).toString());
+    window.scrollTo(0, 0); // Scroll to top
+  };
+
+  // Handler for page input changes using a separate state variable
+  const handlePageInputChange = (e) => {
+    setPageInput(e.target.value);
+  };
+
+  // When the input loses focus or Enter is pressed, validate and update page state.
+  const handlePageInputBlur = () => {
+    const newPage = parseInt(pageInput, 10);
+    if (!isNaN(newPage)) {
+      if (newPage < 1) {
+        setPage(1);
+        setPageInput("1");
+      } else if (newPage > totalPages) {
+        setPage(totalPages);
+        setPageInput(totalPages.toString());
+      } else {
+        setPage(newPage);
+      }
+      window.scrollTo(0, 0); // Scroll to top
+    } else {
+      // Reset to current page if invalid input
+      setPageInput(page.toString());
+    }
+  };
+
+  const handlePageInputKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handlePageInputBlur();
+    }
   };
 
   return (
     <div className="flex items-center justify-between gap-4 flex-nowrap w-full">
       <div className="flex flex-col w-full">
+        {/* Search and Filter Form */}
         <div className="flex items-start justify-between gap-4 flex-nowrap min-w-fit">
           <div className="flex flex-col w-96">
             <h1 className="text-sm font-medium">
               <span>&#8203;</span>
             </h1>
-            {/* Search bar */}
             <div className="bg-gray-200 text-stone-700 group border-none outline-none w-full h-10 rounded-lg flex items-center">
               <input
                 placeholder="Class Title or CRN"
@@ -122,7 +152,7 @@ export function CourseSearch() {
                 onChange={(e) => setSearchInput(e.target.value)}
                 type="text"
                 className="w-full max-w-full flex h-full rounded-3xl group placeholder:text-stone-400 group-hover:placeholder:text-stone-500 group-focus-within:placeholder:text-stone-500 bg-transparent border-none outline-none text-lg font-normal px-4 placeholder:transition-all ease-in-out"
-                onKeyDown={(e) => e.key === "Enter" && handleSearch()} // Trigger search on Enter key
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               />
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -131,7 +161,7 @@ export function CourseSearch() {
                 strokeWidth="1.5"
                 stroke="currentColor"
                 className="size-6 mx-2 stroke-neutral-400 group-hover:stroke-neutral-500 group-focus-within:stroke-neutral-500 hover:stroke-neutral-600 transition-all ease-in-out hover:cursor-pointer stroke-2 flex-shrink-0"
-                onClick={handleSearch} // Trigger search on click
+                onClick={handleSearch}
               >
                 <path
                   strokeLinecap="round"
@@ -141,53 +171,54 @@ export function CourseSearch() {
               </svg>
             </div>
           </div>
-
           {/* Filter Form */}
           <div className="flex flex-col">
             <div className="flex items-center space-x-4">
-              {/*GUR Attribute*/}
+              {/* GUR Attribute */}
               <div className="flex flex-col">
                 <h1 className="text-sm font-medium">GUR Attribute</h1>
                 <Select
-                  isSearchable="false"
+                  isSearchable={false}
                   placeholder=""
-                  className={"react-select-container"}
-                  classNamePrefix={"react-select"}
+                  className="react-select-container"
+                  classNamePrefix="react-select"
                   options={courseAttributes["gurAttributes"]}
                   onChange={setSelectedGUR}
                 />
               </div>
+              {/* Subject */}
               <div className="flex flex-col">
                 <h1 className="text-sm font-medium">Subject</h1>
                 <Select
-                  isSearchable="false"
+                  isSearchable={false}
                   placeholder=""
-                  className={"react-select-container"}
-                  classNamePrefix={"react-select"}
+                  className="react-select-container"
+                  classNamePrefix="react-select"
                   options={courseAttributes["subjects"]}
                   onChange={setSelectedSubject}
                 />
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              {/*GUR Attribute*/}
+              {/* Instructor */}
               <div className="flex flex-col">
                 <h1 className="text-sm font-medium">Instructor</h1>
                 <Select
-                  isSearchable="false"
+                  isSearchable={false}
                   placeholder=""
-                  className={"react-select-container"}
-                  classNamePrefix={"react-select"}
+                  className="react-select-container"
+                  classNamePrefix="react-select"
                   options={instructorList["instructors"]}
                 />
               </div>
+              {/* Delivery Method */}
               <div className="flex flex-col">
                 <h1 className="text-sm font-medium">Delivery Method</h1>
                 <Select
-                  isSearchable="false"
+                  isSearchable={false}
                   placeholder=""
-                  className={"react-select-container"}
-                  classNamePrefix={"react-select"}
+                  className="react-select-container"
+                  classNamePrefix="react-select"
                   options={courseAttributes["deliveryMethods"]}
                   onChange={setSelectedDelivery}
                 />
@@ -195,48 +226,41 @@ export function CourseSearch() {
             </div>
             <div className="flex justify-between">
               <div className="flex flex-col w-[191px]">
-                {" "}
-                {/* Days */}
                 <h1 className="font-medium text-sm">Days</h1>
                 <div className="flex space-x-4 border border-gray-300 rounded-sm p-1 justify-around">
-                  <label className="flex flex-col text-xs items-center font-medium">
-                    M<input className="size-3" type="checkbox"></input>
-                  </label>
-                  <label className="flex flex-col text-xs items-center font-medium">
-                    T<input className="size-3" type="checkbox"></input>
-                  </label>
-                  <label className="flex flex-col text-xs items-center font-medium">
-                    W<input className="size-3" type="checkbox"></input>
-                  </label>
-                  <label className="flex flex-col text-xs items-center font-medium">
-                    T<input className="size-3" type="checkbox"></input>
-                  </label>
-                  <label className="flex flex-col text-xs items-center font-medium">
-                    F<input className="size-3" type="checkbox"></input>
-                  </label>
+                  {[
+                    { key: "monday", label: "M" },
+                    { key: "tuesday", label: "T" },
+                    { key: "wednesday", label: "W" },
+                    { key: "thursday", label: "T" },
+                    { key: "friday", label: "F" },
+                  ].map((day) => (
+                    <label key={day.key} className="flex flex-col text-xs items-center font-medium">
+                      {day.label}
+                      <input className="size-3" type="checkbox" />
+                    </label>
+                  ))}
                 </div>
               </div>
               <div className="flex-col">
-                {" "}
-                {/* Time */}
                 <div className="flex justify-between space-x-2 min-w-[191px]">
                   <div className="flex flex-col">
                     <h1 className="font-medium text-sm">Start Time</h1>
                     <Select
-                      isSearchable="false"
+                      isSearchable={false}
                       placeholder=""
-                      className={"react-select-container"}
-                      classNamePrefix={"react-time"}
+                      className="react-select-container"
+                      classNamePrefix="react-time"
                       options={courseAttributes["times"]}
                     />
                   </div>
                   <div className="flex flex-col">
                     <h1 className="font-medium text-sm">End Time</h1>
                     <Select
-                      isSearchable="false"
+                      isSearchable={false}
                       placeholder=""
-                      className={"react-select-container"}
-                      classNamePrefix={"react-time"}
+                      className="react-select-container"
+                      classNamePrefix="react-time"
                       options={courseAttributes["times"]}
                     />
                   </div>
@@ -247,18 +271,44 @@ export function CourseSearch() {
         </div>
 
         {/* Scrollable Container */}
-        <div className="flex flex-col mt-4 max-h-72 border border-gray-300 rounded-md overflow-y-scroll">
+        <div className="flex flex-col mt-4 min-h-72 max-h-72 border border-gray-300 rounded-md overflow-y-scroll">
           <div className="font-semibold text-base">
-            {!loading && classes.length > 0 && (
+            {loading ? (
+              <div className="flex justify-center items-center min-h-72 h-full py-4">
+                <svg
+                  className="animate-spin h-8 w-8 text-black"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  ></path>
+                </svg>
+              </div>
+            ) : classes.length > 0 ? (
               <ul className="mt-2">
                 {classes.map((course) => (
                   <li key={course.id} className="p-2 border-b border-gray-100">
+                    {/* Render course details */}
                     <div className="font-medium">
                       <div className="flex items-center justify-between">
                         <p className="flex items-center ">
                           {course.title}
                           <p className="font-normal flex items-center">
                             &nbsp;|&nbsp;
+                            <div className="font-normal ">{course.subject}&nbsp;{course.class_number}</div>
+                            <div className="font-normal flex items-center ">&nbsp;|&nbsp;</div>
                             <div className="hover:text-blue-400">
                               <CopyPopover crn={course.crn} />
                             </div>
@@ -288,23 +338,18 @@ export function CourseSearch() {
                         </div>
                       </div>
                       <div className="flex items-center font-normal text-sm space-x-2 ">
-                        {/* Days of the week */}
-                        {/* Only display the first schedule */}
-
-                        {course.schedules.length > 0 && (
+                        {course.schedules && course.schedules.length > 0 ? (
                           <div className="flex items-center space-x-2">
                             {daysOfWeek.map((day) => {
-                              const firstSchedule = course.schedules[0]; // Get only the first schedule
-                              const isActive =
-                                firstSchedule.days?.[day.key] === true;
-
+                              const firstSchedule = course.schedules[0];
+                              const isActive = firstSchedule.days?.[day.key] === true;
                               return (
                                 <span
                                   key={day.key}
                                   className={
                                     isActive
-                                      ? "font-bold text-neutral-600" // Active day styling
-                                      : "text-gray-400 font-medium" // Inactive day styling
+                                      ? "font-bold text-neutral-600"
+                                      : "text-gray-400 font-medium"
                                   }
                                 >
                                   {day.label}
@@ -312,28 +357,27 @@ export function CourseSearch() {
                               );
                             })}
                           </div>
-                        )}
+                        ) : null}
                         <p className="text-sm">|</p>
                         <p>
-                          {course.schedules[0]?.start_time}-
-                          {course.schedules[0]?.end_time}
+                          {course.schedules && course.schedules.length > 0
+                            ? `${course.schedules[0]?.start_time} - ${course.schedules[0]?.end_time}`
+                            : "No schedule data"}
                         </p>
                       </div>
                       <div className="flex items-center font-normal text-sm space-x-2">
-                        {/* second schedule */}
-                        {course.schedules.length > 1 ? (
+                        {course.schedules && course.schedules.length > 1 ? (
                           <div className="flex items-center space-x-2">
                             {daysOfWeek.map((day) => {
-                              const secondSchedule = course.schedules[1]; // Get the second schedule
-                              const isActive =
-                                secondSchedule.days?.[day.key] === true;
+                              const secondSchedule = course.schedules[1];
+                              const isActive = secondSchedule.days?.[day.key] === true;
                               return (
                                 <span
                                   key={day.key}
                                   className={
                                     isActive
-                                      ? "font-bold text-neutral-600" // Active day styling
-                                      : "text-gray-400 font-medium" // Inactive day styling
+                                      ? "font-bold text-neutral-600"
+                                      : "text-gray-400 font-medium"
                                   }
                                 >
                                   {day.label}
@@ -343,8 +387,7 @@ export function CourseSearch() {
                             <div className="flex items-center space-x-2">
                               <p>|</p>
                               <div>
-                                {course.schedules[1]?.start_time}-
-                                {course.schedules[1]?.end_time}
+                                {course.schedules[1]?.start_time} - {course.schedules[1]?.end_time}
                               </div>
                             </div>
                           </div>
@@ -352,19 +395,64 @@ export function CourseSearch() {
                           <div>No Lab Section</div>
                         )}
                       </div>
-
                       {console.log(course)}
-                    </div>
-                    <div className="flex flex-col">
-                      <h1></h1>
                     </div>
                   </li>
                 ))}
               </ul>
+            ) : (
+              <div className="text-center py-4">No courses found</div>
             )}
           </div>
+        </div>
+
+        {/* Pagination Controls */}
+        <div className="flex justify-center mt-4 text-base font-normal flex-nowrap">
+          <button 
+            onClick={handlePrevPage} 
+            disabled={page === 1}
+            className="px-2 py-2 bg-gray-200 rounded-l hover:bg-gray-300 disabled:opacity-50 transition-all ease-in-out flex-nowrap"
+          >
+            Prev Page
+          </button>
+          <div className="px-2 py-2 flex bg-gray-200 justify-center flex-nowrap">
+            <input
+              type="text"
+              value={pageInput}
+              onChange={handlePageInputChange}
+              onBlur={handlePageInputBlur}
+              onKeyDown={handlePageInputKeyDown}
+              className="flex text-center bg-transparent outline-none  flex-nowrap"
+              inputMode="numeric"
+              maxLength="3"
+              max={totalPages}
+              size={3}
+            />
+            <div>/</div>
+            <div className="flex flex-nowrap min-w-[33px] text-center justify-center">{totalPages}</div>
+          </div>
+          <button 
+            onClick={handleNextPage} 
+            disabled={page >= totalPages}
+            className="px-2 py-2 bg-gray-200 rounded-r hover:bg-gray-300 disabled:opacity-50 transition-all ease-in-out"
+          >
+            Next Page
+          </button>
         </div>
       </div>
     </div>
   );
+}
+
+// Define the page input handlers inside the component to access state setters
+function handlePageInputChange(e) {
+  // This will be redefined in the component's scope, so ignore this here.
+}
+
+function handlePageInputBlur() {
+  // This will be redefined in the component's scope, so ignore this here.
+}
+
+function handlePageInputKeyDown(e) {
+  // This will be redefined in the component's scope, so ignore this here.
 }
