@@ -3,26 +3,9 @@ import Select from "react-select";
 import courseAttributes from "../json/courseAttributes.json";
 import instructorList from "../json/instructors.json";
 import { fetchCourseList } from "../apis/courseFetcher";
-import CopyPopover from "./CopyPopover";
-import { useCart } from "./CartContext";
-
-function convert24hourTo12hour(time24) {
-  const [hourStr, minute] = time24.split(":");
-  let hour = parseInt(hourStr, 10);
-  const ampm = hour >= 12 ? "pm" : "am";
-  
-  // Convert hour into 12-hour format
-  if (hour === 0) {
-    hour = 12;
-  } else if (hour > 12) {
-    hour -= 12;
-  }
-  
-  return `${hour}:${minute}${ampm}`;
-}
+import { CourseList } from "./CourseList";
 
 export function CourseSearch() {
-  const { addToCart } = useCart();
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -48,7 +31,16 @@ export function CourseSearch() {
   useEffect(() => {
     setPage(1);
     setPageInput("1");
-  }, [searchInput, selectedGUR, selectedSubject, selectedDelivery, selectedInstructor, selectedDays, selectedStartTime, selectedEndTime]);
+  }, [
+    searchInput,
+    selectedGUR,
+    selectedSubject,
+    selectedDelivery,
+    selectedInstructor,
+    selectedDays,
+    selectedStartTime,
+    selectedEndTime,
+  ]);
 
   // Save search state to localStorage
   useEffect(() => {
@@ -130,7 +122,17 @@ export function CourseSearch() {
   useEffect(() => {
     handleSearch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, searchInput, selectedGUR, selectedSubject, selectedDelivery, selectedInstructor, selectedDays, selectedStartTime, selectedEndTime]);
+  }, [
+    page,
+    searchInput,
+    selectedGUR,
+    selectedSubject,
+    selectedDelivery,
+    selectedInstructor,
+    selectedDays,
+    selectedStartTime,
+    selectedEndTime,
+  ]);
 
   const handleNextPage = () => {
     if (page < totalPages) {
@@ -323,7 +325,7 @@ export function CourseSearch() {
           </div>
         </div>
 
-        {/* Scrollable Container */}
+        {/* Scrollable Course List */}
         <div className="flex flex-col mt-4 min-h-72 max-h-72 border border-gray-300 rounded-md overflow-y-scroll">
           <div className="font-semibold text-base">
             {loading ? (
@@ -349,144 +351,39 @@ export function CourseSearch() {
                   ></path>
                 </svg>
               </div>
+              
             ) : classes.length > 0 ? (
-              <ul className="mt-2">
-                {classes.map((course) => (
-                  <li key={course.id} className="p-2 border-b border-gray-100">
-                    {/* Render course details */}
-                    <div className="font-medium">
-                      <div className="flex items-center justify-between">
-                        <p className="flex items-center ">
-                          {course.title}
-                          <p className="font-normal flex items-center">
-                            &nbsp;|&nbsp;
-                            <div className="font-normal ">
-                              {course.subject}&nbsp;{course.class_number}
-                            </div>
-                            <div className="font-normal flex items-center ">
-                              &nbsp;|&nbsp;
-                            </div>
-                            <div className="hover:text-blue-400">
-                              <CopyPopover crn={course.crn} />
-                            </div>
-                          </p>
-                        </p>
+              <ul className="">
+                <div className="flex flex-col min-h-72 max-h-72 rounded-md overflow-y-scroll">
+                  <div className="font-semibold text-base">
+                    {loading ? (
+                      <div className="flex justify-center items-center min-h-72 h-full py-4">
                         <svg
+                          className="animate-spin h-8 w-8 text-black"
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
                           viewBox="0 0 24 24"
-                          strokeWidth={1.5}
-                          stroke="currentColor"
-                          className="size-6 hover:stroke-neutral-600 transition-all ease-in-out stroke-neutral-400 group-hover:stroke-neutral-500 group-focus-within:stroke-neutral-500 hover:cursor-pointer"
-                          alt="plus icon"
-                          onClick={() => addToCart(course)}
                         >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
                           <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                          />
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                          ></path>
                         </svg>
                       </div>
-                      <div className="text-sm font-normal flex flex-row items-center w-fit justify-between">
-                        <div className="flex items-center">
-                          <div className="font-medium">
-                            {course.seats_available} / {course.seats_max}
-                          </div>
-                          <p>&nbsp;Seats Remaining</p>
-                          <div className="font-medium">
-                            &nbsp;|&nbsp;
-                            {(() => {
-                              const instructorName = course.instructors?.[0]?.name;
-                              if (instructorName) {
-                                const [lastName, firstName] = instructorName.split(", ");
-                                return `${firstName} ${lastName}`;
-                              }
-                              return "Instructor TBA";
-                            })()}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center font-normal text-sm space-x-2 ">
-                        {course.schedules && course.schedules.length > 0 ? (
-                          <div className="flex items-center space-x-2">
-                            {daysOfWeek.map((day) => {
-                              const firstSchedule = course.schedules[0];
-                              const isActive =
-                                firstSchedule.days?.[day.key] === true;
-                              return (
-                                <span
-                                  key={day.key}
-                                  className={
-                                    isActive
-                                      ? "font-bold text-neutral-600"
-                                      : "text-gray-400 font-medium"
-                                  }
-                                >
-                                  {day.label}
-                                </span>
-                              );
-                            })}
-                          </div>
-                        ) : null}
-                        <p className="text-sm">|</p>
-                        <p>
-                          {course.schedules && course.schedules.length > 0
-                            ? course.schedules[0]?.start_time === "TBA" ||
-                              course.schedules[0]?.end_time === "TBA"
-                              ? "TBA"
-                              : `${convert24hourTo12hour(
-                                  course.schedules[0]?.start_time
-                                )} - ${convert24hourTo12hour(
-                                  course.schedules[0]?.end_time
-                                )}`
-                            : "No schedule data"}
-                        </p>
-                      </div>
-                      <div className="flex items-center font-normal text-sm space-x-2">
-                        {course.schedules && course.schedules.length > 1 ? (
-                          <div className="flex items-center space-x-2">
-                            {daysOfWeek.map((day) => {
-                              const secondSchedule = course.schedules[1];
-                              const isActive =
-                                secondSchedule.days?.[day.key] === true;
-                              return (
-                                <span
-                                  key={day.key}
-                                  className={
-                                    isActive
-                                      ? "font-bold text-neutral-600"
-                                      : "text-gray-400 font-medium"
-                                  }
-                                >
-                                  {day.label}
-                                </span>
-                              );
-                            })}
-                            <div className="flex items-center space-x-2">
-                              <p>|</p>
-                              <div>
-                              {course.schedules && course.schedules.length > 1
-                            ? course.schedules[1]?.start_time === "TBA" ||
-                              course.schedules[1]?.end_time === "TBA"
-                              ? "TBA"
-                              : `${convert24hourTo12hour(
-                                  course.schedules[1]?.start_time
-                                )} - ${convert24hourTo12hour(
-                                  course.schedules[1]?.end_time
-                                )}`
-                            : "No schedule data"}
-                              </div>
-                            </div>
-                          </div>
-                        ) : (
-                          <div>No Lab Section</div>
-                        )}
-                      </div>
-                      {console.log(course)}
-                    </div>
-                  </li>
-                ))}
+                    ) : (
+                      <CourseList courses={classes} variant="coursesearch" />
+                    )}
+                  </div>
+                </div>
               </ul>
             ) : (
               <div className="text-center py-4">No courses found</div>
@@ -534,15 +431,3 @@ export function CourseSearch() {
   );
 }
 
-// Define the page input handlers inside the component to access state setters
-function handlePageInputChange(e) {
-  // This will be redefined in the component's scope, so ignore this here.
-}
-
-function handlePageInputBlur() {
-  // This will be redefined in the component's scope, so ignore this here.
-}
-
-function handlePageInputKeyDown(e) {
-  // This will be redefined in the component's scope, so ignore this here.
-}

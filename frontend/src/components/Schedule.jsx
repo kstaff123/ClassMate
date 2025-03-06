@@ -245,7 +245,7 @@ export function Schedule() {
                   {blocks.map((block, idx) => {
                     const color =
                       blocks.length > 1
-                        ? "rgba(255, 0, 0, 0.3)"
+                        ? "rgba(0, 0, 0, 0.1)"
                         : "oklch(0.707 0.165 254.624)";
                     const blockTop = block.coverageStart * 100; // in %
                     const blockHeight = (block.coverageEnd - block.coverageStart) * 100; // in %
