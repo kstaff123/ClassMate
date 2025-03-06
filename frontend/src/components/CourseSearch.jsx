@@ -180,11 +180,11 @@ export function CourseSearch() {
   };
 
   return (
-    <div className="flex items-center justify-between gap-4 flex-nowrap w-full">
+    <div className="flex flex-col items-center justify-between gap-4 w-full">
       <div className="flex flex-col w-full">
         {/* Search and Filter Form */}
-        <div className="flex items-start justify-between gap-4 flex-nowrap min-w-fit">
-          <div className="flex flex-col w-96">
+        <div className="flex flex-col md:flex-row items-start justify-between gap-4 w-full">
+          <div className="flex flex-col w-full md:w-96">
             <h1 className="text-sm font-medium">
               <span>&#8203;</span>
             </h1>
@@ -215,10 +215,10 @@ export function CourseSearch() {
             </div>
           </div>
           {/* Filter Form */}
-          <div className="flex flex-col">
-            <div className="flex items-center space-x-4">
+          <div className="flex flex-col w-full md:w-auto">
+            <div className="flex flex-col md:flex-row items-center space-x-0 md:space-x-4 space-y-4 md:space-y-0">
               {/* GUR Attribute */}
-              <div className="flex flex-col">
+              <div className="flex flex-col w-full md:w-auto">
                 <h1 className="text-sm font-medium">GUR Attribute</h1>
                 <Select
                   isSearchable={false}
@@ -230,7 +230,7 @@ export function CourseSearch() {
                 />
               </div>
               {/* Subject */}
-              <div className="flex flex-col">
+              <div className="flex flex-col w-full md:w-auto">
                 <h1 className="text-sm font-medium">Subject</h1>
                 <Select
                   isSearchable={false}
@@ -242,9 +242,9 @@ export function CourseSearch() {
                 />
               </div>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex flex-col md:flex-row items-center space-x-0 md:space-x-4 space-y-4 md:space-y-0 mt-4">
               {/* Instructor */}
-              <div className="flex flex-col">
+              <div className="flex flex-col w-full md:w-auto">
                 <h1 className="text-sm font-medium">Instructor</h1>
                 <Select
                   isSearchable={false}
@@ -256,7 +256,7 @@ export function CourseSearch() {
                 />
               </div>
               {/* Delivery Method */}
-              <div className="flex flex-col">
+              <div className="flex flex-col w-full md:w-auto">
                 <h1 className="text-sm font-medium">Delivery Method</h1>
                 <Select
                   isSearchable={false}
@@ -268,8 +268,8 @@ export function CourseSearch() {
                 />
               </div>
             </div>
-            <div className="flex justify-between">
-              <div className="flex flex-col w-[191px]">
+            <div className="flex flex-col md:flex-row justify-between mt-4 space-y-4 md:space-y-0">
+              <div className="flex flex-col w-full md:w-[191px]">
                 <h1 className="font-medium text-sm">Days</h1>
                 <div className="flex space-x-4 border border-gray-300 rounded-sm p-1 justify-around">
                   {daysOfWeek.map((day) => (
@@ -295,9 +295,9 @@ export function CourseSearch() {
                   ))}
                 </div>
               </div>
-              <div className="flex-col">
-                <div className="flex justify-between space-x-2 min-w-[191px]">
-                  <div className="flex flex-col">
+              <div className="flex flex-col w-full md:w-auto">
+                <div className="flex flex-col md:flex-row justify-between space-x-0 md:space-x-2 min-w-[191px]">
+                  <div className="flex flex-col w-full md:w-auto">
                     <h1 className="font-medium text-sm">Start Time</h1>
                     <Select
                       isSearchable={false}
@@ -308,7 +308,7 @@ export function CourseSearch() {
                       onChange={setSelectedStartTime}
                     />
                   </div>
-                  <div className="flex flex-col">
+                  <div className="flex flex-col w-full md:w-auto mt-4 md:mt-0">
                     <h1 className="font-medium text-sm">End Time</h1>
                     <Select
                       isSearchable={false}
@@ -351,7 +351,6 @@ export function CourseSearch() {
                   ></path>
                 </svg>
               </div>
-              
             ) : classes.length > 0 ? (
               <ul className="">
                 <div className="flex flex-col min-h-72 max-h-72 rounded-md overflow-y-scroll">
@@ -430,4 +429,3 @@ export function CourseSearch() {
     </div>
   );
 }
-
