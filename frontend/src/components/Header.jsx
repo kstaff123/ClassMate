@@ -2,7 +2,7 @@ import "../App.css";
 import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-export function Header() {
+export function Header({toggleCart, isCartOpen}) {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -10,17 +10,17 @@ export function Header() {
     const activePage = location.pathname === "/CourseBrowser" ? "coursebrowser" : "dashboard";
 
     return (
-        <header className="bg-white w-full h-16 grid grid-cols-3 px-4 items-center">
-            <h1 className="text-center font-medium text-black justify-self-start">
+        <header className="bg-white w-full h-16 grid grid-cols-3 px-4 items-center z-20">
+            <h1 className="text-center font-medium text-black justify-self-start max-sm:hidden">
                 ClassMate
             </h1>
+            <div className="sm:hidden"></div>
             <div className="text-xl flex items-center space-x-4 justify-center">
                 <div
-                    className={`${
-                        activePage === "dashboard"
-                            ? "bg-[#173E82] w-fit h-fit rounded-4xl text-white flex-nowrap"
-                            : ""
-                    }`}
+                    className={`${activePage === "dashboard"
+                        ? "bg-[#173E82] w-fit h-fit rounded-4xl text-white flex-nowrap"
+                        : ""
+                        }`}
                 >
                     <button
                         onClick={() => {
@@ -32,11 +32,10 @@ export function Header() {
                     </button>
                 </div>
                 <div
-                    className={`${
-                        activePage === "coursebrowser"
-                            ? "bg-[#173E82] w-fit h-fit rounded-4xl text-white flex-nowrap"
-                            : ""
-                    }`}
+                    className={`${activePage === "coursebrowser"
+                        ? "bg-[#173E82] w-fit h-fit rounded-4xl text-white flex-nowrap"
+                        : ""
+                        }`}
                 >
                     <button
                         onClick={() => {
@@ -49,7 +48,11 @@ export function Header() {
                 </div>
             </div>
             <div className="text-sm font-medium ml-4 justify-self-end">
-                <h2>login</h2>
+                <div className=" md:hidden bg-[#173E82] rounded-3xl p-2 w-fit h-fit text-white">
+                    <button onClick={toggleCart}>
+                        {isCartOpen ? "Close Cart" : "Cart"}
+                    </button>
+                </div>
             </div>
         </header>
     );
