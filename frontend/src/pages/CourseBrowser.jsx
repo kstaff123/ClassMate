@@ -4,6 +4,7 @@ import { Header } from "../components/Header";
 import { fetchCourseList } from "../apis/courseFetcher";
 import { CourseSearch } from "../components/CourseSearch";
 import { Cart } from "../components/Cart";
+import { CartMobile } from "../components/CartMobile";
 
 export function CourseBrowser() {
 
@@ -16,16 +17,24 @@ export function CourseBrowser() {
         setClasses(data?.data || []); // Store response in state
         setLoading(false); // Stop loading
     };
-        return (
-            <main className="font-primary font-bold text-2xl bg-gray-100 h-screen flex-col overflow-hidden flex">
-                <div className="flex-none">
-                    <Header />
-                </div>
-                <div className="grid grid-cols-3 items-center grid-flow-col flex-grow px-8 gap-x-8 max-h-screen">
-                    <div className="bg-white col-span-2 w-full h-[87.5vh] max-h-7/8 rounded-4xl shadow-xl p-4 ">
-                        <div className="flex items-center">
-                            <h2 className="text-2xl font-medium pr-2">Browse Classes</h2>
-                            {/*
+
+    const [isCartOpen, openCart] = useState(false);
+
+    const toggleCart = () => {
+        openCart((prev) => !prev);
+    };
+
+    return (
+        <main className="font-primary font-bold text-2xl bg-gray-100 md:h-screen flex-col md:overflow-hidden overflow-y-auto">
+            <div className="flex-none z-30">
+                <Header toggleCart={toggleCart} isCartOpen={isCartOpen} />
+            </div>
+            {isCartOpen && <CartMobile />}
+            <div className="grid grid-cols-3 items-center grid-flow-col flex-grow px-8 gap-x-8 md:max-h-screen max-md:grid-cols-1">
+                <div className="bg-white col-span-2 w-full mt-13 mb-13 md:h-[87.5vh] md:max-h-7/8 rounded-4xl shadow-xl p-4">
+                    <div className="flex items-center">
+                        <h2 className="text-2xl font-medium pr-2">Browse Classes</h2>
+                        {/*
                             <h2 className="font-light">|</h2>
                             <button 
                                 className="flex items-center gap-2 w-fit h-fit pl-2 text-black font-normal text-2xl transition-all duration-200 ease-in-out cursor-pointer group hover:text-blue-300"
@@ -45,25 +54,24 @@ export function CourseBrowser() {
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
                                 </svg>
                             </button> */}
-                            
-                        </div>
-                        <hr class="text-gray-300 pb-1"></hr>
-                        <div className="py-1 flex-row items-center">
-                            <CourseSearch/>
+
+                    </div>
+                    <hr class="text-gray-300 pb-1"></hr>
+                    <div className="py-1 flex-row items-center">
+                        <CourseSearch />
+                    </div>
+
+                </div>
+                <div className="bg-white col-span-1 w-full h-7/8 rounded-4xl shadow-xl max-md:hidden">
+                    <div className="flex p-4 flex-col">
+                        <h2 className="text-2xl font-medium">Class Cart</h2>
+                        <div className="">
+                            <Cart />
                         </div>
 
                     </div>
-                    <div className="bg-white col-span-1 w-full h-7/8 rounded-4xl shadow-xl">
-                        <div className="flex p-4 flex-col">
-                            <h2 className="text-2xl font-medium">Class Cart</h2>
-                            <div className="">
-                                <Cart/>
-                            </div>
-                            
-                        </div>
-                    </div>
                 </div>
-            </main>
+            </div>
+        </main>
     );
 }
- 
