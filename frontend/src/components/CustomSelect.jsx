@@ -49,15 +49,15 @@ export default function CustomSelect({
       {/* "Button" that toggles the dropdown */}
       <div
         onClick={toggleDropdown}
-        className="bg-white border border-gray-300 rounded-md py-2 px-3 flex items-center justify-between cursor-pointer"
+        className="bg-white border border-gray-300 rounded-md py-2 px-3 flex items-center justify-between cursor-pointer max-h-[40px] min-h-[40px]"
       >
-        <span className={selectedOption ? "text-gray-800" : "text-gray-400"}>
+        <span className={selectedOption ? "text-gray-800 font-medium text-sm" : "text-gray-400 font-medium text-sm"}>
           {selectedOption ? selectedOption.label : placeholder}
         </span>
         {/* Dropdown Arrow */}
         <svg
-          className={`w-4 h-4 text-gray-400 transition-transform ${
-            isOpen ? "rotate-180" : ""
+          className={`w-4 h-4 text-gray-400 ${
+            isOpen ? "" : ""
           }`}
           fill="none"
           stroke="currentColor"
@@ -74,12 +74,12 @@ export default function CustomSelect({
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <ul className="absolute mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg z-10">
+        <ul className="absolute mt-1 top-14 w-full bg-white border border-gray-300 rounded-md shadow-lg z-10">
           {options.map((option) => (
             <li
               key={option.value}
               onClick={() => handleOptionClick(option)}
-              className="px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+              className="px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 cursor-pointer"
             >
               {option.label}
             </li>
