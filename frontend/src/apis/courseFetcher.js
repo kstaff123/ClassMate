@@ -1,4 +1,3 @@
-// In your courseFetcher.js
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 const apiToken = import.meta.env.VITE_API_TOKEN;
 
@@ -21,17 +20,22 @@ export const fetchCourseList = async (page = 1, pageSize = 10, filters = {}) => 
     if (filters.selectedInstructor) {
       filterQuery += `&filters[instructors][name][$eq]=${encodeURIComponent(filters.selectedInstructor)}`;
     }
-    if (filters.selectedDays) {
-      filters.selectedDays.forEach(day => {
-        filterQuery += `&filters[schedules][days][${day.key}][$eq]=true`;
+    if (filters.selectedDays && filters.selectedDays.length > 0) {
+      filters.selectedDays.forEach((day, index) => {
+        filterQuery += `&filters[schedules][$and][${index}][days][${day.key}][$eq]=true`;
       });
     }
+    
+    
     if (filters.selectedStartTime) {
       filterQuery += `&filters[schedules][start_time][$gte]=${encodeURIComponent(filters.selectedStartTime)}`;
     }
     if (filters.selectedEndTime) {
       filterQuery += `&filters[schedules][end_time][$lte]=${encodeURIComponent(filters.selectedEndTime)}`;
     }
+
+    console.log("Filters applied:", filters);
+    console.log("Constructed filter query:", filterQuery);
 
     const queryString = [
       `pagination[page]=${page}`,
@@ -43,6 +47,9 @@ export const fetchCourseList = async (page = 1, pageSize = 10, filters = {}) => 
       filterQuery
     ].join('&');
 
+    console.log("Final query string:", queryString);
+    console.log("Final URL:", `${baseUrl}/api/classes?${queryString}`);
+
     const response = await fetch(`${baseUrl}/api/classes?${queryString}`, {
       method: 'GET',
       headers: {
@@ -52,10 +59,13 @@ export const fetchCourseList = async (page = 1, pageSize = 10, filters = {}) => 
     });
 
     if (!response.ok) throw new Error('Failed to fetch course list');
-    return response.json();
+
+    const jsonResponse = await response.json();
+    console.log("Fetched course list:", jsonResponse);
+
+    return jsonResponse;
   } catch (error) {
     console.error("Error fetching course list:", error);
     return null;
   }
 };
-
