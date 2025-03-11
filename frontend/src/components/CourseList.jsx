@@ -55,6 +55,7 @@ export function CourseList({ courses, variant }) {
 
   return (
     <ul className="w-full">
+      
       {courses.length === 0 ? (
         <p className="my-3 text-center">{variant === "cart" ? "No courses in cart." : "No courses found."}</p>
       ) : (
@@ -71,19 +72,19 @@ export function CourseList({ courses, variant }) {
               {/* Seats and Instructor */}
               <div className="text-sm font-normal flex flex-row items-center justify-between">
                 <div className="flex items-center space-x-1">
-                  <p className="font-medium">
+                  <p className="font-medium text-xs sm:text-sm">
                     {course.seats_available} / {course.seats_max}
                   </p>
                   {variant === "cart" ? (
-                    <p>Seats</p>
+                    <p className=" text-xs sm:text-sm">Seats</p>
                   ) : (
                     <>
-                      <p className="hidden sm:inline">Seats Remaining</p>
-                      <p className="sm:hidden">Seats</p>
+                      <p className="hidden sm:inline  text-xs sm:text-sm">Seats Remaining</p>
+                      <p className="sm:hidden  text-xs sm:text-sm">Seats</p>
                     </>
                   )}
                 </div>
-                <div className="font-medium text-right">
+                <div className="font-medium text-right max-sm:text-xs">
                   <Instructor instructors={course.instructors} />
                 </div>
               </div>
@@ -91,7 +92,7 @@ export function CourseList({ courses, variant }) {
               {/* Class Schedule */}
               {course.schedules?.length > 0 ? (
                 course.schedules.map((schedule, index) => (
-                  <div key={index} className="flex items-center font-normal text-sm space-x-2">
+                  <div key={index} className="flex items-center font-normal text-xs sm:text-sm space-x-2">
                     {/* Days Display */}
                     <div className="flex items-center space-x-1">
                       {daysOfWeek.map((day) => {

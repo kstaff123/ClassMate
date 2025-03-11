@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Select from "react-select";
 import courseAttributes from "../json/courseAttributes.json";
 import instructorList from "../json/instructors.json";
@@ -23,6 +23,8 @@ export function CourseFilters({
   setSelectedEndTime,
   handleSearch,
 }) {
+  const [filtersVisible, setFiltersVisible] = useState(true);
+
   const daysOfWeek = [
     { key: "sunday", label: "S" },
     { key: "monday", label: "M" },
@@ -32,6 +34,10 @@ export function CourseFilters({
     { key: "friday", label: "F" },
     { key: "saturday", label: "S" },
   ];
+
+  const toggleFilters = () => {
+    setFiltersVisible(!filtersVisible);
+  };
 
   return (
     <div className="flex flex-col md:flex-row items-start justify-between gap-4 w-full">
@@ -66,7 +72,7 @@ export function CourseFilters({
         </div>
       </div>
       {/* Filter Form */}
-      <div className="flex flex-col w-full md:w-auto">
+      <div className={`flex flex-col w-full md:w-auto transition-all duration-200 ${filtersVisible ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
         <div className="flex flex-row items-center space-x-4 md:space-x-4 space-y-4 md:space-y-0">
           {/* GUR Attribute */}
           <div className="flex flex-col w-full md:w-auto mb-0">
@@ -167,6 +173,9 @@ export function CourseFilters({
             </div>
           </div>
         </div>
+      </div>
+      <div className=" md:hidden flex justify-center w-full text-sm hover:text-blue-300 mb-2 transition-all ease-in-out font-medium cursor-pointer">
+        <div onClick={toggleFilters}>{filtersVisible ? "Hide Filters" : "Show Filters"}</div>
       </div>
     </div>
   );
