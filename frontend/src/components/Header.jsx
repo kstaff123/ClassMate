@@ -48,11 +48,11 @@ export function Header({toggleCart, isCartOpen}) {
                 </div>
             </div>
             <div className="text-sm font-medium ml-4 justify-self-end">
-                <div className=" md:hidden bg-[#173E82] rounded-3xl p-2 w-fit h-fit text-white">
+                {/*** <div className=" md:hidden bg-[#173E82] rounded-3xl p-2 w-fit h-fit text-white">
                     <button onClick={toggleCart}>
                         {isCartOpen ? "Close Cart" : "Cart"}
                     </button>
-                </div>
+                </div> ***/}
             </div>
         </header>
     );
