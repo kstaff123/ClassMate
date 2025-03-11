@@ -28,7 +28,7 @@ export default function CopyPopover({ crn }) {
       <button
         ref={buttonRef}
         onClick={handleCopy}
-        className="transition-all ease-in-out cursor-pointer"
+        className="transition-all ease-in-out cursor-pointer text-sm md:text-base"
       >
         {crn}
       </button>

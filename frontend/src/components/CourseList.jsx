@@ -74,7 +74,8 @@ export function CourseList({ courses, variant }) {
                   <p className="font-medium">
                     {course.seats_available} / {course.seats_max}
                   </p>
-                  <p>Seats Remaining</p>
+                  <p className="hidden sm:inline">Seats Remaining</p>
+                    <p className="sm:hidden">Seats</p>
                 </div>
                 <div className="font-medium text-right">
                   <Instructor instructors={course.instructors} />

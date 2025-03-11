@@ -21,7 +21,7 @@ export function Homepage() {
       </div>
       {isCartOpen && <CartMobile />}
       <div class="grid grid-cols-3 items-center grid-flow-col flex-grow px-8 gap-x-8 max-md:grid-cols-1">
-        <div class="bg-white col-span-2 w-full h-[87.5vh] max-h-7/8 rounded-4xl shadow-xl">
+        <div class="bg-white col-span-2 w-full h-[87.5vh] max-sm:m-0 max-h-7/8 rounded-4xl shadow-xl">
           <div class="flex flex-col p-4 max-h-full">
             <h2 class="text-2xl font-medium">Schedule</h2>
             <div

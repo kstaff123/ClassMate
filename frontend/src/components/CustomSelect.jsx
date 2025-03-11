@@ -9,36 +9,53 @@ export default function CustomSelect({
   className = "",    // extra Tailwind classes for sizing/spacing
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  // If not using controlled props, store selection in local state:
+  const [isFocused, setIsFocused] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredOptions, setFilteredOptions] = useState(options);
   const [selectedOption, setSelectedOption] = useState(value || null);
 
   const selectRef = useRef(null);
-
-  const toggleDropdown = () => setIsOpen((prev) => !prev);
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
     if (onChange) {
       onChange(option); // Pass selection back up if needed
     }
+    // Set the search term to the selected label so it displays when not focused
+    setSearchTerm(option.label);
     setIsOpen(false);
+    setIsFocused(false);
   };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  useEffect(() => {
+    setFilteredOptions(
+      options.filter((option) =>
+        option.label.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+  }, [searchTerm, options]);
 
   // Close dropdown if user clicks outside
   useEffect(() => {
     function handleClickOutside(e) {
       if (selectRef.current && !selectRef.current.contains(e.target)) {
         setIsOpen(false);
+        setIsFocused(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Keep local state synced with external "value" if you're using controlled props
+  // Sync local state with external "value" for controlled components
   useEffect(() => {
     if (value !== undefined) {
       setSelectedOption(value);
+      setSearchTerm(value ? value.label : "");
     }
   }, [value]);
 
@@ -46,19 +63,36 @@ export default function CustomSelect({
     <div className={`flex flex-col relative ${className}`} ref={selectRef}>
       {label && <label className="text-sm font-medium mb-1">{label}</label>}
 
-      {/* "Button" that toggles the dropdown */}
-      <div
-        onClick={toggleDropdown}
-        className="bg-white border border-gray-300 rounded-md py-2 px-3 flex items-center justify-between cursor-pointer max-h-[40px] min-h-[40px]"
-      >
-        <span className={selectedOption ? "text-gray-800 font-medium text-sm" : "text-gray-400 font-medium text-sm"}>
-          {selectedOption ? selectedOption.label : placeholder}
-        </span>
+      <div className="bg-white border border-gray-300 rounded-md py-2 px-3 flex items-center justify-between cursor-pointer max-h-[40px] min-h-[40px]">
+        <input
+          type="text"
+          value={
+            isFocused
+              ? searchTerm
+              : selectedOption
+              ? selectedOption.label
+              : ""
+          }
+          onChange={handleSearchChange}
+          placeholder={placeholder}
+          className="w-full bg-transparent border-none outline-none text-gray-800 placeholder:text-black font-medium text-sm"
+          onFocus={() => {
+            setIsFocused(true);
+            // If there's a selected option, clear it when the user focuses for a new search
+            if (selectedOption) {
+              setSelectedOption(null);
+              setSearchTerm("");
+              if (onChange) onChange(null);
+            }
+            setIsOpen(true);
+          }}
+          onBlur={() => {
+            setIsFocused(false);
+          }}
+        />
         {/* Dropdown Arrow */}
         <svg
-          className={`w-4 h-4 text-gray-400 ${
-            isOpen ? "" : ""
-          }`}
+          className="w-4 h-4 text-gray-800"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -74,17 +108,19 @@ export default function CustomSelect({
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <ul className="absolute mt-1 top-14 w-full bg-white border border-gray-300 rounded-md shadow-lg z-10">
-          {options.map((option) => (
-            <li
-              key={option.value}
-              onClick={() => handleOptionClick(option)}
-              className="px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 cursor-pointer"
-            >
-              {option.label}
-            </li>
-          ))}
-        </ul>
+        <div className="absolute mt-1 top-[59.2px] w-full bg-white border border-gray-300 rounded-md shadow-lg z-10">
+          <ul className="max-h-60 overflow-y-scroll">
+            {filteredOptions.map((option) => (
+              <li
+                key={option.value}
+                onClick={() => handleOptionClick(option)}
+                className="px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 cursor-pointer"
+              >
+                {option.label}
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   );

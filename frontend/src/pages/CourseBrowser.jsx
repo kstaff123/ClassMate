@@ -24,59 +24,30 @@ export function CourseBrowser() {
   };
 
   return (
-    <main className="font-primary font-bold text-2xl bg-gray-100 md:h-screen flex-col md:overflow-hidden overflow-y-auto">
+    <main className="font-primary font-bold text-2xl bg-gray-100 h-screen overflow-y-scroll flex-col flex">
       <div className="flex-none z-30">
         <Header toggleCart={toggleCart} isCartOpen={isCartOpen} />
       </div>
-      {isCartOpen && <CartMobile />}
-      <div className="grid grid-cols-3 items-center grid-flow-col flex-grow px-8 gap-x-8 md:max-h-screen max-lg:grid-cols-1">
-        <div className="bg-white col-span-2 w-full mt-13 mb-13 md:h-[87.5vh] md:max-h-7/8 rounded-4xl shadow-xl p-4">
+      {isCartOpen && <CartMobile onClose={toggleCart} />}
+      <div className="grid grid-cols-3 items-center grid-flow-col flex-grow sm:px-8 gap-x-8 md:max-h-screen max-lg:grid-cols-1">
+        <div className="bg-white col-span-2 w-full min-h-[80.5vh] max-sm:m-0 max-md:mt-[46px] max-md:mb-[46px] sm:rounded-4xl shadow-xl p-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-medium pr-2">Browse Classes</h2>
-            <button id="menu-btn" class="lg:hidden focus:outline-none">
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4 6h16M4 12h16M4 18h16"
-                ></path>
-              </svg>
+            <h2 className="sm:text-2xl font-medium pr-2 text-base">Browse Classes</h2>
+            <button id="menu-btn" className="stroke-black  hover:stroke-blue-300 flex font-medium hover:text-blue-300 text-base  transition-all ease-in-out items-center justify-center lg:hidden focus:outline-none hover:cursor-pointer" onClick={toggleCart}>
+            <svg className="mr-2 "width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M6.29977 5H21L19 12H7.37671M20 16H8L6 3H3M9 20C9 20.5523 8.55228 21 8 21C7.44772 21 7 20.5523 7 20C7 19.4477 7.44772 19 8 19C8.55228 19 9 19.4477 9 20ZM20 20C20 20.5523 19.5523 21 19 21C18.4477 21 18 20.5523 18 20C18 19.4477 18.4477 19 19 19C19.5523 19 20 19.4477 20 20Z"  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+<p className="max-sm:hidden">Class Cart</p>
             </button>
-            {/*
-                            <h2 className="font-light">|</h2>
-                            <button 
-                                className="flex items-center gap-2 w-fit h-fit pl-2 text-black font-normal text-2xl transition-all duration-200 ease-in-out cursor-pointer group hover:text-blue-300"
-                                onClick={handleFetchCourses}
-                            >
-                                <span className="transition-all duration-200 ease-in-out group-hover:text-blue-300">
-                                    Load Course List
-                                </span>
-                                <svg 
-                                    xmlns="http://www.w3.org/2000/svg" 
-                                    fill="none" 
-                                    viewBox="0 0 24 24" 
-                                    strokeWidth={1.5} 
-                                    stroke="currentColor" 
-                                    className="size-6 opacity-0 transition-all duration-200 ease-in-out group-hover:opacity-100 group-hover:-translate-x-1 group-hover:text-blue-300"
-                                >
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
-                                </svg>
-                            </button> */}
           </div>
-          <hr class="text-gray-300 pb-1"></hr>
-          <div className="py-1 flex-row items-center">
+          <hr className="text-gray-300 pb-1"></hr>
+          <div className="py-1 flex-row items-center h-full">
             <CourseSearch />
           </div>
         </div>
         <div className="bg-white col-span-1 w-full h-7/8 rounded-4xl shadow-xl max-lg:hidden">
           <div className="flex p-4 flex-col">
-            <h2 className="text-2xl font-medium">Class Cart</h2>
+            <h2 className="text-2xl font-medium ">Class Cart</h2>
             <div className="">
               <Cart />
             </div>

@@ -181,7 +181,7 @@ export function CourseSearch() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-between gap-4 w-full">
+    <div className="flex flex-col items-center justify-between gap-4 w-full h-full">
       <div className="flex flex-col w-full">
         {/* Search and Filter Form */}
         <CourseFilters
