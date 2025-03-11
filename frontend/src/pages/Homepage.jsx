@@ -22,8 +22,8 @@ export function Homepage() {
       <div className="grid grid-cols-3 items-center grid-flow-col flex-grow sm:px-8  gap-x-8 max-lg:grid-cols-1">
         <div className="bg-white col-span-2 w-full h-[100vh] sm:h-[87.5vh] max-sm:m-0 sm:max-h-7/8 rounded-2xl sm:rounded-4xl shadow-xl overflow-hidden">
           <div className="flex flex-col sm:p-4 max-h-full">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl max-sm:p-4 font-medium max-sm:justify-self-center">
+            <div className="flex items-center max-sm:pt-4 max-sm:px-4 justify-between">
+              <h2 className="sm:text-2xl font-medium pr-2 text-base">
                 Schedule
               </h2>
               <button
@@ -33,8 +33,8 @@ export function Homepage() {
               >
                 <svg
                   className="mr-2 "
-                  width="24"
-                  height="24"
+                  width="18"
+                  height="18"
                   viewBox="0 0 24 24"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -49,13 +49,14 @@ export function Homepage() {
                 <p className="max-sm:hidden">Class Cart</p>
               </button>
             </div>
+            <hr className="text-gray-300 mb-4 max-sm:mx-4"></hr>
             <div
               id="scrollable-container"
               className="mx-.9 overflow-y-scroll overflow-x-hidden rounded-xl h-full sm:h-auto max-sm:hidden"
             >
               <Schedule />
             </div>
-            <div className="sm:hidden flex items-center h-[calc(100vh-127px)]">
+            <div className="sm:hidden flex items-center h-[calc(100vh-120px)]">
               <MobileSchedule />
             </div>
           </div>

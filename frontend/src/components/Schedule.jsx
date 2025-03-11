@@ -17,11 +17,8 @@ function convert24hourTo12hour(time24) {
   const [hourStr, minute] = time24.split(":");
   let hour = parseInt(hourStr, 10);
   const ampm = hour >= 12 ? "pm" : "am";
-  if (hour === 0) {
-    hour = 12;
-  } else if (hour > 12) {
-    hour -= 12;
-  }
+  if (hour === 0) hour = 12;
+  else if (hour > 12) hour -= 12;
   return `${hour}:${minute}${ampm}`;
 }
 
@@ -34,8 +31,9 @@ function parseTimeToFloat(timeStr) {
   ampm = ampm.toLowerCase();
   if (ampm === "pm" && hour < 12) hour += 12;
   if (ampm === "am" && hour === 12) hour = 0;
-  const floatVal = hour + minutes / 60 - 7; // 7am => 0
-  return Math.min(Math.max(floatVal, 0), 16); // clamp to [0..16]
+  // 7am = 0 in our system
+  const floatVal = hour + minutes / 60 - 7;
+  return Math.min(Math.max(floatVal, 0), 16);
 }
 
 export function Schedule() {
@@ -152,6 +150,8 @@ export function Schedule() {
             coverageEnd,
             startCell,
             endCell,
+            startFloat,
+            endFloat,
           });
         }
       });
@@ -172,7 +172,7 @@ export function Schedule() {
       const avgEnd = totalEnd / classCount;
       const middleTimeIndex = Math.floor((avgStart + avgEnd) / 2) - 1;
       const middleTimeElement = scheduleRef.current?.querySelector(
-        `div[data-time-index="${middleTimeIndex-1}"]`
+        `div[data-time-index="${middleTimeIndex - 1}"]`
       );
       if (middleTimeElement) {
         middleTimeElement.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -205,14 +205,13 @@ export function Schedule() {
         {days.map((day) => (
           <div
             key={day}
-            className="p-2 text-center font-medium bg-gray-100 flex items-center justify-center drop-shadow-md"
+            className="p-2 text-center font-medium bg-gray-100 flex items-center justify-center drop-shadow-md border border-gray-300"
             style={{
               height: 30,
               position: "sticky",
               top: 0,
               zIndex: 10,
               background: "#f3f4f6",
-              borderLeft: "1px solid #ccc",
             }}
             onPointerDown={handlePointerDown}
             onTouchStart={handleTouchStart}
@@ -225,7 +224,7 @@ export function Schedule() {
         {times.map((timeLabel, hourIndex) => (
           <React.Fragment key={hourIndex}>
             <div
-              className="p-2 text-center font-medium bg-gray-100 flex items-center justify-center relative"
+              className="p-2 text-center font-medium bg-gray-100 flex items-center justify-center relative border border-gray-300"
               style={{ height: rowHeight, borderTop: "1px solid #ccc" }}
               data-time-index={hourIndex}
               onPointerDown={handlePointerDown}
@@ -239,7 +238,7 @@ export function Schedule() {
               const cellStyle = {
                 position: "relative",
                 height: rowHeight,
-                overflow: "hidden",
+                overflow: "visible",
                 borderTop: "1px solid #ccc",
                 borderLeft: "1px solid #ccc",
               };
@@ -256,18 +255,20 @@ export function Schedule() {
                   onTouchStart={handleTouchStart}
                 >
                   {blocks.map((block, idx) => {
-                    const color =
-                      blocks.length > 1
-                        ? "rgba(0, 0, 0, 0.1)"
-                        : "oklch(0.707 0.165 254.624)";
-                    const blockTop = block.coverageStart * 100;
-                    const blockHeight = (block.coverageEnd - block.coverageStart) * 100;
-                    const radiusStyle = {};
-                    if (block.isFirstHour) {
-                      radiusStyle.borderTopLeftRadius = "8px";
-                      radiusStyle.borderTopRightRadius = "8px";
-                    }
-                    if (block.isLastHour) {
+                    // Render the block only in its start cell to create one continuous block.
+                    if (block.startCell !== hourIndex) return null;
+                    const totalHours = block.endFloat - block.startFloat;
+                    if (totalHours <= 0) return null;
+                    // Calculate top offset (in %) based on the fractional start time
+                    const topPercent = (block.startFloat - block.startCell) * 100;
+                    // Height is determined by the class duration (in hours) scaled to %
+                    const heightPercent = totalHours * 100;
+                    const radiusStyle = {
+                      borderTopLeftRadius: "8px",
+                      borderTopRightRadius: "8px",
+                    };
+                    // Round bottom corners if the class ends before 11pm
+                    if (block.endCell < 17) {
                       radiusStyle.borderBottomLeftRadius = "8px";
                       radiusStyle.borderBottomRightRadius = "8px";
                     }
@@ -279,11 +280,12 @@ export function Schedule() {
                           position: "absolute",
                           left: 0,
                           right: 0,
-                          top: blockTop + "%",
-                          padding: "4px",
-                          boxSizing: "border-box",
-                          height: blockHeight + "%",
-                          backgroundColor: color,
+                          top: topPercent + "%",
+                          height: heightPercent + "%",
+                          backgroundColor:
+                            blocks.length > 1
+                              ? "rgba(0, 0, 0, 0.1)"
+                              : "oklch(0.707 0.165 254.624)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -291,14 +293,14 @@ export function Schedule() {
                           fontWeight: "500",
                           color: "white",
                           fontSize: "0.8rem",
+                          padding: "4px",
+                          boxSizing: "border-box",
                           ...radiusStyle,
                         }}
                       >
-                        {block.isFirstHour && (
-                          <div>
-                            {block.course.subject} {block.course.class_number}
-                          </div>
-                        )}
+                        <div style={{ textAlign: "center" }}>
+                          {block.course.subject} {block.course.class_number}
+                        </div>
                       </div>
                     );
                   })}
