@@ -11,10 +11,12 @@ function App() {
   return (
     <div>
       <CartProvider>
+      <div className="font-[Montserrat]">
       <Routes>
-        <Route path="/" element={<Homepage/>} />
-        <Route path="/CourseBrowser" element={<CourseBrowser/>} />
+          <Route path="/" element={<Homepage/>} />
+          <Route path="/CourseBrowser" element={<CourseBrowser/>} />
       </Routes>
+      </div>
       </CartProvider>
     </div>
   );
