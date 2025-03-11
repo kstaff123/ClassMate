@@ -2,7 +2,7 @@ import "../App.css";
 import React, { useState, useRef, useEffect } from "react";
 import { useCart } from "./CartContext";
 
-// If your schedule uses day booleans like "monday: true":
+// Map for day names
 const dayNameMap = {
   Sun: "sunday",
   Mon: "monday",
@@ -17,19 +17,15 @@ function convert24hourTo12hour(time24) {
   const [hourStr, minute] = time24.split(":");
   let hour = parseInt(hourStr, 10);
   const ampm = hour >= 12 ? "pm" : "am";
-  
-  // Convert hour into 12-hour format
   if (hour === 0) {
     hour = 12;
   } else if (hour > 12) {
     hour -= 12;
   }
-  
   return `${hour}:${minute}${ampm}`;
 }
 
 function parseTimeToFloat(timeStr) {
-  // e.g. "3:00pm" => 8.0, "4:50pm" => 9.83
   const match = timeStr.match(/(\d+):(\d+)(am|pm)/i);
   if (!match) return 0;
   let [, hourStr, minuteStr, ampm] = match;
@@ -46,7 +42,7 @@ export function Schedule() {
   const { cart } = useCart();
   const scheduleRef = useRef(null);
 
-  // 7 columns for days, 17 rows for times (7am–11pm)
+  // Setup days and times
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const times = Array.from({ length: 17 }, (_, i) => {
     let hour = 7 + i;
@@ -55,43 +51,68 @@ export function Schedule() {
     return `${hour}${period}`;
   });
 
-  // For row resizing
-  const [rowHeight, setRowHeight] = useState(64);
-  const [paddingHours, setPaddingHours] = useState(0); // State for padding hours
+  // Determine mobile: larger default/minimum row height
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const defaultRowHeight = isMobile ? 64 : 80;
+  const minRowHeight = isMobile ? 60 : 50;
+
+  const [rowHeight, setRowHeight] = useState(defaultRowHeight);
+  const [paddingHours, setPaddingHours] = useState(0);
   const resizeData = useRef({ startY: 0, startHeight: rowHeight });
-  const handleMouseDown = (e) => {
+
+  // ----- Pointer event handlers -----
+  const handlePointerDown = (e) => {
+    e.preventDefault();
     document.body.style.userSelect = "none";
     resizeData.current.startY = e.clientY;
     resizeData.current.startHeight = rowHeight;
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("pointermove", handlePointerMove);
+    document.addEventListener("pointerup", handlePointerUp);
   };
-  const handleMouseMove = (e) => {
+
+  const handlePointerMove = (e) => {
     const dy = (e.clientY - resizeData.current.startY) * 0.1;
-    const newHeight = Math.max(30, resizeData.current.startHeight + dy);
+    const newHeight = Math.max(minRowHeight, resizeData.current.startHeight + dy);
     setRowHeight(newHeight);
   };
-  const handleMouseUp = () => {
-    document.removeEventListener("mousemove", handleMouseMove);
-    document.removeEventListener("mouseup", handleMouseUp);
+
+  const handlePointerUp = () => {
+    document.removeEventListener("pointermove", handlePointerMove);
+    document.removeEventListener("pointerup", handlePointerUp);
     document.body.style.userSelect = "";
   };
 
-  /**
-   * We store blocks in occupiedCells["dayIndex-hourIndex"].
-   * Each block now stores:
-   *  - course,
-   *  - isFirstHour (true if this cell is the first cell for the course block),
-   *  - isLastHour (true if this cell is the last cell for the course block),
-   *  - coverageStart, coverageEnd,
-   *  - startCell, endCell.
-   */
+  // ----- Touch event handlers -----
+  const handleTouchStart = (e) => {
+    e.preventDefault(); // Prevent default scrolling behavior
+    document.body.style.userSelect = "none";
+    const touchY = e.touches[0].clientY;
+    resizeData.current.startY = touchY;
+    resizeData.current.startHeight = rowHeight;
+    document.addEventListener("touchmove", handleTouchMove, { passive: false });
+    document.addEventListener("touchend", handleTouchEnd);
+  };
+
+  const handleTouchMove = (e) => {
+    const touchY = e.touches[0].clientY;
+    const dy = (touchY - resizeData.current.startY) * 0.1;
+    const newHeight = Math.max(minRowHeight, resizeData.current.startHeight + dy);
+    setRowHeight(newHeight);
+  };
+
+  const handleTouchEnd = () => {
+    document.removeEventListener("touchmove", handleTouchMove);
+    document.removeEventListener("touchend", handleTouchEnd);
+    document.body.style.userSelect = "";
+  };
+
+  // Build map of occupied cells
   const occupiedCells = {};
   let totalStart = 0;
   let totalEnd = 0;
   let classCount = 0;
-  let minStart = 16; // 11pm
-  let maxEnd = 0; // 7am
+  let minStart = 16;
+  let maxEnd = 0;
 
   cart.forEach((course) => {
     if (!course.schedules) return;
@@ -101,31 +122,26 @@ export function Schedule() {
       const hour12endtime = convert24hourTo12hour(sched.end_time);
       const startFloat = parseTimeToFloat(hour12starttime || "7:00am");
       const endFloat = parseTimeToFloat(hour12endtime || "11:00pm");
+
       totalStart += startFloat;
       totalEnd += endFloat;
       classCount++;
       minStart = Math.min(minStart, startFloat);
       maxEnd = Math.max(maxEnd, endFloat);
+
       days.forEach((label, dayIndex) => {
         const dayKey = dayNameMap[label];
         if (!dayKey || !sched.days[dayKey]) return;
         const startCell = Math.floor(startFloat);
         const endCell = Math.floor(endFloat);
         for (let cell = startCell; cell <= endCell; cell++) {
-          let coverageStart = 0;
-          if (cell === startCell) {
-            coverageStart = startFloat - startCell;
-          }
-          let coverageEnd = 1;
-          if (cell === endCell) {
-            coverageEnd = endFloat - endCell;
-          }
+          let coverageStart = cell === startCell ? startFloat - startCell : 0;
+          let coverageEnd = cell === endCell ? endFloat - endCell : 1;
           if (coverageEnd <= coverageStart) continue;
           const cellKey = `${dayIndex}-${cell}`;
           if (!occupiedCells[cellKey]) {
             occupiedCells[cellKey] = [];
           }
-          // Use booleans: if the cell equals the startCell, mark it as the first; if equals the endCell, mark it as the last.
           const isFirstHour = cell === startCell;
           const isLastHour = cell === endCell;
           occupiedCells[cellKey].push({
@@ -142,27 +158,27 @@ export function Schedule() {
     });
   });
 
+  // Auto-adjust row height based on schedule span
   useEffect(() => {
-    const totalHours = maxEnd - minStart; // Add padding hours
-    const newHeight = Math.max(30, Math.min(48, 1024 / totalHours));
-    setRowHeight(newHeight);
-  }, [minStart, maxEnd, paddingHours]);
+    const totalHours = maxEnd - minStart;
+    const calculated = Math.max(minRowHeight, Math.min(32, 1024 / (totalHours || 1)));
+    setRowHeight(calculated);
+  }, [minStart, maxEnd, paddingHours, minRowHeight]);
 
+  // Scroll to the middle of user’s classes
   useEffect(() => {
     if (classCount > 0) {
       const avgStart = totalStart / classCount;
       const avgEnd = totalEnd / classCount;
       const middleTimeIndex = Math.floor((avgStart + avgEnd) / 2) - 1;
-      const middleTimeElement = scheduleRef.current.querySelector(
-        `div[data-time-index="${middleTimeIndex}"]`
+      const middleTimeElement = scheduleRef.current?.querySelector(
+        `div[data-time-index="${middleTimeIndex-1}"]`
       );
       if (middleTimeElement) {
         middleTimeElement.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     }
   }, [cart, totalStart, totalEnd, classCount]);
-
-
 
   return (
     <div className="flex w-full text-sm">
@@ -181,11 +197,10 @@ export function Schedule() {
             zIndex: 10,
             background: "#f3f4f6",
           }}
+          onPointerDown={handlePointerDown}
+          onTouchStart={handleTouchStart}
         >
-          <div
-            className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize"
-            onMouseDown={handleMouseDown}
-          />
+          <div className="absolute bottom-0 left-0 right-0 h-4" />
         </div>
         {days.map((day) => (
           <div
@@ -199,6 +214,8 @@ export function Schedule() {
               background: "#f3f4f6",
               borderLeft: "1px solid #ccc",
             }}
+            onPointerDown={handlePointerDown}
+            onTouchStart={handleTouchStart}
           >
             {day}
           </div>
@@ -207,27 +224,18 @@ export function Schedule() {
         {/* Time Rows */}
         {times.map((timeLabel, hourIndex) => (
           <React.Fragment key={hourIndex}>
-            {/* Left column: time label */}
             <div
-              className="p-2 text-center font-medium bg-gray-100 flex items-center justify-center relative cursor-ns-resize"
-              onMouseDown={handleMouseDown}
-              style={{
-                height: rowHeight,
-                borderTop: "1px solid #ccc",
-              }}
+              className="p-2 text-center font-medium bg-gray-100 flex items-center justify-center relative"
+              style={{ height: rowHeight, borderTop: "1px solid #ccc" }}
               data-time-index={hourIndex}
+              onPointerDown={handlePointerDown}
+              onTouchStart={handleTouchStart}
             >
               {timeLabel}
-              <div
-                className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize"
-                onMouseDown={handleMouseDown}
-              />
             </div>
-            {/* 7 day columns for this hour */}
             {days.map((day, dayIndex) => {
               const cellKey = `${dayIndex}-${hourIndex}`;
               const blocks = occupiedCells[cellKey] || [];
-              // Default cell style: top & left borders
               const cellStyle = {
                 position: "relative",
                 height: rowHeight,
@@ -235,21 +243,25 @@ export function Schedule() {
                 borderTop: "1px solid #ccc",
                 borderLeft: "1px solid #ccc",
               };
-              // If any block continues from above, remove the top border for a smooth transition.
-              const continuingBlock = blocks.some((b) => b.coverageStart === 0 && b.startCell < hourIndex);
-              if (continuingBlock) {
+
+              if (blocks.some((b) => b.coverageStart === 0 && b.startCell < hourIndex)) {
                 cellStyle.borderTop = "none";
               }
+
               return (
-                <div key={cellKey} style={cellStyle}>
+                <div
+                  key={cellKey}
+                  style={cellStyle}
+                  onPointerDown={handlePointerDown}
+                  onTouchStart={handleTouchStart}
+                >
                   {blocks.map((block, idx) => {
                     const color =
                       blocks.length > 1
                         ? "rgba(0, 0, 0, 0.1)"
                         : "oklch(0.707 0.165 254.624)";
-                    const blockTop = block.coverageStart * 100; // in %
-                    const blockHeight = (block.coverageEnd - block.coverageStart) * 100; // in %
-                    // Use our stored booleans to decide if this cell is the first or last.
+                    const blockTop = block.coverageStart * 100;
+                    const blockHeight = (block.coverageEnd - block.coverageStart) * 100;
                     const radiusStyle = {};
                     if (block.isFirstHour) {
                       radiusStyle.borderTopLeftRadius = "8px";
@@ -275,7 +287,7 @@ export function Schedule() {
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          font: "Montserrat",
+                          fontFamily: "Montserrat, sans-serif",
                           fontWeight: "500",
                           color: "white",
                           fontSize: "0.8rem",

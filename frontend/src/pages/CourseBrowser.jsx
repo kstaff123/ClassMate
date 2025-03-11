@@ -26,11 +26,11 @@ export function CourseBrowser() {
   return (
     <main className="font-primary font-bold text-2xl bg-gray-100 h-screen overflow-y-scroll flex-col flex">
       <div className="flex-none z-30">
-        <Header toggleCart={toggleCart} isCartOpen={isCartOpen} />
+        <Header/>
       </div>
       {isCartOpen && <CartMobile onClose={toggleCart} />}
-      <div className="grid grid-cols-3 items-center grid-flow-col flex-grow sm:px-8 gap-x-8 md:max-h-screen max-lg:grid-cols-1">
-        <div className="bg-white col-span-2 w-full min-h-[80.5vh] max-sm:m-0 max-md:mt-[46px] max-md:mb-[46px] sm:rounded-4xl shadow-xl p-4">
+      <div className="grid grid-cols-3 items-center grid-flow-col flex-grow sm:px-8 gap-x-8 max-lg:grid-cols-1">
+        <div className="bg-white col-span-2 w-full  sm:h-[87.5vh] max-sm:m-0 sm:max-h-7/8 rounded-2xl sm:rounded-4xl shadow-xl p-4">
           <div className="flex items-center justify-between">
             <h2 className="sm:text-2xl font-medium pr-2 text-base">Browse Classes</h2>
             <button id="menu-btn" className="stroke-black  hover:stroke-blue-300 flex font-medium hover:text-blue-300 text-base  transition-all ease-in-out items-center justify-center lg:hidden focus:outline-none hover:cursor-pointer" onClick={toggleCart}>
@@ -45,7 +45,7 @@ export function CourseBrowser() {
             <CourseSearch />
           </div>
         </div>
-        <div className="bg-white col-span-1 w-full h-7/8 rounded-4xl shadow-xl max-lg:hidden">
+        <div className="bg-white col-span-1 w-full h-[87.5vh] max-h-7/8 rounded-4xl shadow-xl max-lg:hidden">
           <div className="flex p-4 flex-col">
             <h2 className="text-2xl font-medium ">Class Cart</h2>
             <div className="">

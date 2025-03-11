@@ -10,7 +10,7 @@ export function Header({toggleCart, isCartOpen}) {
     const activePage = location.pathname === "/CourseBrowser" ? "coursebrowser" : "dashboard";
 
     return (
-        <header className="bg-white w-full h-16 grid grid-cols-3 px-4 items-center z-20">
+        <header className="bg-white w-full h-16 grid grid-cols-3 px-4 items-center z-20 drop-shadow-lg">
             <h1 className="text-center font-medium text-black justify-self-start max-sm:hidden">
                 ClassMate
             </h1>
