@@ -13,6 +13,26 @@ const dayNameMap = {
   Sat: "saturday",
 };
 
+const tailwindColorMap = {
+    "bg-red-400": "#f87171",
+    "bg-orange-400": "#fb923c",
+    "bg-amber-400": "#facc15",
+    "bg-yellow-400": "#facc15", // adjust as needed
+    "bg-lime-400": "#bef264",
+    "bg-green-400": "#4ade80",
+    "bg-emerald-400": "#34d399",
+    "bg-teal-400": "#2dd4bf",
+    "bg-cyan-400": "#22d3ee",
+    "bg-sky-400": "#38bdf8",
+    "bg-blue-400": "#60a5fa",
+    "bg-indigo-400": "#818cf8",
+    "bg-violet-400": "#a78bfa",
+    "bg-purple-400": "#c084fc",
+    "bg-fuchsia-400": "#f472b6",
+    "bg-pink-400": "#f472b6",
+    "bg-rose-400": "#fb7185",
+  };
+
 // Converts "13:00" => "1:00pm"
 function convert24hourTo12hour(time24) {
   const [hourStr, minute] = time24.split(":");
@@ -50,7 +70,7 @@ function formatHour(hour24) {
 }
 
 export function MobileSchedule() {
-  const { cart } = useCart();
+  const { cart, courseColors } = useCart();
   const scheduleRef = useRef(null);
 
   // Days of the week
@@ -207,7 +227,7 @@ export function MobileSchedule() {
                               right: 0,
                               top: topPercent + "%",
                               height: heightPercent + "%",
-                              backgroundColor: "oklch(0.707 0.165 254.624)",
+                              backgroundColor: tailwindColorMap[courseColors[block.course.id]] || "#1d4ed8",
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "center",
