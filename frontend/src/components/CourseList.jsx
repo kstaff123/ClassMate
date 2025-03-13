@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { CourseTitle } from "./CourseTitle";
 import { Instructor } from "./Instructor";
 import { useCart } from "./CartContext";
@@ -67,7 +68,9 @@ export function CourseList({ courses, variant }) {
           // Compute container styles per course.
           const containerStyles =
             variant === "cart"
-              ? `flex flex-col rounded-lg p-3 text-white my-3 shadow-md ${courseColors[course.id]}`
+              ? `flex flex-col rounded-lg p-3 text-white my-3 shadow-md ${
+                  courseColors[course.id]
+                }`
               : "p-3 border-b border-gray-200 hover:bg-gray-100 transition-all";
           return (
             <li key={course.id} className={containerStyles}>
@@ -154,3 +157,8 @@ export function CourseList({ courses, variant }) {
     </ul>
   );
 }
+
+CourseList.propTypes = {
+  courses: PropTypes.array.isRequired,
+  variant: PropTypes.string,
+};
