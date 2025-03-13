@@ -32,7 +32,6 @@ const tailwindColorMap = {
   "bg-rose-400": "#fb7185",
 };
 
-
 function convert24hourTo12hour(time24) {
   const [hourStr, minute] = time24.split(":");
   let hour = parseInt(hourStr, 10);
@@ -75,7 +74,7 @@ export function Schedule() {
   const minRowHeight = isMobile ? 60 : 50;
 
   const [rowHeight, setRowHeight] = useState(defaultRowHeight);
-  const [paddingHours, setPaddingHours] = useState(0);
+  const [paddingHours] = useState(0);
   const resizeData = useRef({ startY: 0, startHeight: rowHeight });
 
   // ----- Pointer event handlers -----
@@ -90,7 +89,10 @@ export function Schedule() {
 
   const handlePointerMove = (e) => {
     const dy = (e.clientY - resizeData.current.startY) * 0.1;
-    const newHeight = Math.max(minRowHeight, resizeData.current.startHeight + dy);
+    const newHeight = Math.max(
+      minRowHeight,
+      resizeData.current.startHeight + dy
+    );
     setRowHeight(newHeight);
   };
 
@@ -114,7 +116,10 @@ export function Schedule() {
   const handleTouchMove = (e) => {
     const touchY = e.touches[0].clientY;
     const dy = (touchY - resizeData.current.startY) * 0.1;
-    const newHeight = Math.max(minRowHeight, resizeData.current.startHeight + dy);
+    const newHeight = Math.max(
+      minRowHeight,
+      resizeData.current.startHeight + dy
+    );
     setRowHeight(newHeight);
   };
 
@@ -135,7 +140,8 @@ export function Schedule() {
   cart.forEach((course) => {
     if (!course.schedules) return;
     course.schedules.forEach((sched) => {
-      if (!sched.days || sched.start_time === "TBA" || sched.end_time === "TBA") return;
+      if (!sched.days || sched.start_time === "TBA" || sched.end_time === "TBA")
+        return;
       const hour12starttime = convert24hourTo12hour(sched.start_time);
       const hour12endtime = convert24hourTo12hour(sched.end_time);
       const startFloat = parseTimeToFloat(hour12starttime || "7:00am");
@@ -181,7 +187,10 @@ export function Schedule() {
   // Auto-adjust row height based on schedule span
   useEffect(() => {
     const totalHours = maxEnd - minStart;
-    const calculated = Math.max(minRowHeight, Math.min(32, 1024 / (totalHours || 1)));
+    const calculated = Math.max(
+      minRowHeight,
+      Math.min(32, 1024 / (totalHours || 1))
+    );
     setRowHeight(calculated);
   }, [minStart, maxEnd, paddingHours, minRowHeight]);
 
@@ -195,7 +204,10 @@ export function Schedule() {
         `div[data-time-index="${middleTimeIndex - 1}"]`
       );
       if (middleTimeElement) {
-        middleTimeElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        middleTimeElement.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
       }
     }
   }, [cart, totalStart, totalEnd, classCount]);
@@ -252,7 +264,7 @@ export function Schedule() {
             >
               {timeLabel}
             </div>
-            {days.map((day, dayIndex) => {
+            {days.map((_day, dayIndex) => {
               const cellKey = `${dayIndex}-${hourIndex}`;
               const blocks = occupiedCells[cellKey] || [];
               const cellStyle = {
@@ -263,7 +275,11 @@ export function Schedule() {
                 borderLeft: "1px solid #ccc",
               };
 
-              if (blocks.some((b) => b.coverageStart === 0 && b.startCell < hourIndex)) {
+              if (
+                blocks.some(
+                  (b) => b.coverageStart === 0 && b.startCell < hourIndex
+                )
+              ) {
                 cellStyle.borderTop = "none";
               }
 
@@ -280,7 +296,8 @@ export function Schedule() {
                     const totalHours = block.endFloat - block.startFloat;
                     if (totalHours <= 0) return null;
                     // Calculate top offset (in %) based on the fractional start time
-                    const topPercent = (block.startFloat - block.startCell) * 100;
+                    const topPercent =
+                      (block.startFloat - block.startCell) * 100;
                     // Height is determined by the class duration (in hours) scaled to %
                     const heightPercent = totalHours * 100;
                     const radiusStyle = {
@@ -305,8 +322,9 @@ export function Schedule() {
                           backgroundColor:
                             blocks.length > 1
                               ? "rgba(0, 0, 0, 0.1)"
-                              : tailwindColorMap[courseColors[block.course.id]] || "#1d4ed8"
-                              ,
+                              : tailwindColorMap[
+                                  courseColors[block.course.id]
+                                ] || "#1d4ed8",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
