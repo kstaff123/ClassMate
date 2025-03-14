@@ -19,7 +19,7 @@ export function CourseBrowser() {
       </div>
       {isCartOpen && <CartMobile onClose={toggleCart} />}
       <div className="grid grid-cols-3 items-center grid-flow-col flex-grow sm:px-8 gap-x-8 max-lg:grid-cols-1">
-        <div className="bg-white col-span-2 w-full  sm:h-[87.5vh] max-sm:m-0 sm:max-h-7/8 rounded-2xl sm:rounded-4xl shadow-xl p-4">
+        <div className="bg-white col-span-2 w-full h-full sm:h-[87.5vh] short:h-[87.5vh] max-sm:m-0 maxshort:m-0  sm:max-h-7/8  rounded-2xl sm:rounded-4xl shadow-xl p-4">
           <div className="flex items-center justify-between">
             <h2 className="sm:text-2xl font-medium pr-2 text-base">
               Browse Classes

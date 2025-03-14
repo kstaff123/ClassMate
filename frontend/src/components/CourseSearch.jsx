@@ -1,7 +1,4 @@
 import { useState, useEffect } from "react";
-import Select from "react-select";
-import courseAttributes from "../json/courseAttributes.json";
-import instructorList from "../json/instructors.json";
 import { fetchCourseList } from "../apis/courseFetcher";
 import { CourseList } from "./CourseList";
 import { CourseFilters } from "./CourseFilters";
@@ -70,16 +67,6 @@ export function CourseSearch() {
     selectedEndTime,
     searchInput,
   ]);
-
-  const daysOfWeek = [
-    { key: "sunday", label: "S" },
-    { key: "monday", label: "M" },
-    { key: "tuesday", label: "T" },
-    { key: "wednesday", label: "W" },
-    { key: "thursday", label: "T" },
-    { key: "friday", label: "F" },
-    { key: "saturday", label: "S" },
-  ];
 
   const handleSearch = async () => {
     setLoading(true);
@@ -181,36 +168,34 @@ export function CourseSearch() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-between gap-4 w-full h-full">
-      <div className="flex flex-col w-full">
+    <div className="flex flex-col items-center justify-between gap-4 w-full h-full sm:h-[calc(88vh-129px)]">
+      <div className="flex flex-col w-full sm:max-h-full">
         {/* Search and Filter Form */}
         <CourseFilters
-        searchInput={searchInput}
-        setSearchInput={setSearchInput}
-        selectedGUR={selectedGUR}
-        setSelectedGUR={setSelectedGUR}
-        selectedSubject={selectedSubject}
-        setSelectedSubject={setSelectedSubject}
-        selectedDelivery={selectedDelivery}
-        setSelectedDelivery={setSelectedDelivery}
-        selectedInstructor={selectedInstructor}
-        setSelectedInstructor={setSelectedInstructor}
-        selectedDays={selectedDays}
-        setSelectedDays={setSelectedDays}
-        selectedStartTime={selectedStartTime}
-        setSelectedStartTime={setSelectedStartTime}
-        selectedEndTime={selectedEndTime}
-        setSelectedEndTime={setSelectedEndTime}
-        handleSearch={handleSearch}
+          searchInput={searchInput}
+          setSearchInput={setSearchInput}
+          selectedGUR={selectedGUR}
+          setSelectedGUR={setSelectedGUR}
+          selectedSubject={selectedSubject}
+          setSelectedSubject={setSelectedSubject}
+          selectedDelivery={selectedDelivery}
+          setSelectedDelivery={setSelectedDelivery}
+          selectedInstructor={selectedInstructor}
+          setSelectedInstructor={setSelectedInstructor}
+          selectedDays={selectedDays}
+          setSelectedDays={setSelectedDays}
+          selectedStartTime={selectedStartTime}
+          setSelectedStartTime={setSelectedStartTime}
+          selectedEndTime={selectedEndTime}
+          setSelectedEndTime={setSelectedEndTime}
+          handleSearch={handleSearch}
         />
-            
-
 
         {/* Scrollable Course List */}
-        <div className="flex flex-col mt-4 min-h-72 max-h-72 border border-gray-300 rounded-md overflow-y-scroll">
+        <div className="flex flex-col mt-4 border border-gray-300 rounded-md overflow-y-scroll">
           <div className="font-semibold text-base">
             {loading ? (
-              <div className="flex justify-center items-center min-h-72 h-full py-4">
+              <div className="flex justify-center items-center h-full py-4">
                 <svg
                   className="animate-spin h-8 w-8 text-black"
                   xmlns="http://www.w3.org/2000/svg"
@@ -234,7 +219,7 @@ export function CourseSearch() {
               </div>
             ) : classes.length > 0 ? (
               <ul className="">
-                <div className="flex flex-col min-h-72 max-h-72 rounded-md overflow-y-scroll">
+                <div className="flex flex-col rounded-md overflow-y-scroll">
                   <div className="font-semibold text-base">
                     {loading ? (
                       <div className="flex justify-center items-center min-h-72 h-full py-4">

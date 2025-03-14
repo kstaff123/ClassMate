@@ -1,6 +1,3 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
 import { Homepage } from "./pages/Homepage";
 import { Routes, Route } from "react-router-dom";
@@ -11,12 +8,12 @@ function App() {
   return (
     <div>
       <CartProvider>
-      <div className="font-[Montserrat]">
-      <Routes>
-          <Route path="/" element={<Homepage/>} />
-          <Route path="/CourseBrowser" element={<CourseBrowser/>} />
-      </Routes>
-      </div>
+        <div className="font-[Montserrat]">
+          <Routes>
+            <Route path="/" element={<Homepage />} />
+            <Route path="/CourseBrowser" element={<CourseBrowser />} />
+          </Routes>
+        </div>
       </CartProvider>
     </div>
   );
