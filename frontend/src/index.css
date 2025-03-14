@@ -1,7 +1,21 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
-@custom-variant maxshort (@media (max-height: 640px) and (min-width: 640px));
-@custom-variant short (@media (min-height: 640px) and (max-width: 640px));
+/* 
+  The custom "short" variant applies only when:
+  - The viewport is at least 640px wide (so that sm: can be used)
+  - The viewport height is below 640px (i.e. "short")
+  
+  This means:
+  - If width >= 640px and height < 640px, you can use short: utilities.
+  - If width >= 640px and height >= 640px, only your sm: rules apply.
+  - Devices with width < 640px get the base styling.
+*/
+@custom-variant short (@media (min-width: 640px) and (max-height: 639px));
+@custom-variant max-short (@media (max-width: 640px) and (min-height: 639px));
+@custom-variant shortorsmall (@media (min-width: 639px) and (min-height: 639px));
+@custom-variant max-shortorsmall (@media (max-width: 639px) and (max-height: 640px));
+
+@tailwind utilities;
 
 body {
   font-family: "Montserrat", sans-serif;

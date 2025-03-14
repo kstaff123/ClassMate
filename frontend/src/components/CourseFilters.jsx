@@ -40,8 +40,8 @@ export function CourseFilters({
   };
 
   return (
-    <div className="flex flex-col md:flex-row items-start justify-between gap-4 w-full">
-      <div className="flex flex-col w-full md:w-96">
+    <div className="flex flex-col xl:flex-row items-center xl:items-start justify-between gap-4 w-full">
+      <div className="flex flex-col w-full xl:w-full">
         <h1 className="text-sm font-medium">
           <span>&#8203;</span>
         </h1>
@@ -72,57 +72,63 @@ export function CourseFilters({
         </div>
       </div>
       {/* Filter Form */}
-      <div className={`flex flex-col w-full md:w-auto transition-all duration-200 ${filtersVisible ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+      <div
+        className={`flex flex-col w-full  transition-all duration-200 ${
+          filtersVisible
+            ? "max-h-screen opacity-100"
+            : "max-h-0 opacity-0 overflow-hidden"
+        }`}
+      >
         <div className="flex flex-row items-center space-x-4 md:space-x-4 space-y-4 md:space-y-0">
           {/* GUR Attribute */}
-          <div className="flex flex-col w-full md:w-auto mb-0">
+          <div className="flex flex-col w-full xl:w-auto mb-0">
             <CustomSelect
               label="GUR Attribute"
               options={courseAttributes["gurAttributes"]}
               placeholder=""
               value={selectedGUR}
               onChange={(option) => setSelectedGUR(option)}
-              className="w-full md:w-60"
+              className="w-full xl:w-60"
             />
           </div>
           {/* Subject */}
-          <div className="flex flex-col w-full">
+          <div className="flex flex-col w-full xl:w-auto mb-0">
             <CustomSelect
               label="Subject"
               options={courseAttributes["subjects"]}
               placeholder=""
               value={selectedSubject}
               onChange={(option) => setSelectedSubject(option)}
-              className="w-full md:w-60"
+              className="w-full xl:w-60"
             />
           </div>
         </div>
         <div className="flex flex-row items-center space-x-4 md:space-x-4 space-y-4 md:space-y-0">
           {/* Instructor */}
-          <div className="flex flex-col w-full md:w-auto mb-0">
+          <div className="flex flex-col w-full xl:w-auto mb-0">
             <CustomSelect
               label="Instructor"
               options={instructorList["instructors"]}
               placeholder=""
               value={selectedInstructor}
               onChange={(option) => setSelectedInstructor(option)}
-              className="w-full md:w-60"
+              className="w-full xl:w-60"
             />
           </div>
           {/* Delivery Method */}
-          <div className="flex flex-col w-full">
+          <div className="flex flex-col w-full xl:w-auto mb-0">
             <CustomSelect
               label="Delivery Method"
               options={courseAttributes["deliveryMethods"]}
               placeholder=""
               value={selectedDelivery}
               onChange={(option) => setSelectedDelivery(option)}
-              className="w-full md:w-60"
+              className="w-full xl:w-60"
             />
           </div>
         </div>
-        <div className="flex flex-col md:flex-row justify-between space-y-4 md:space-y-0 space-x-4">
-          <div className="flex flex-col w-full md:w-[240px]">
+        <div className="flex flex-col sm:flex-row justify-start space-y-4 sm:space-y-0 space-x-4">
+          <div className="flex flex-col max-xl:w-full max-xl:max-w-full max-2xl:max-w-[49%] xl:w-[240px]">
             <h1 className="font-medium text-sm mb-1">Days</h1>
             <div className="flex space-x-4 border border-gray-300 rounded-md p-1 py-1 pb-[6px] justify-around">
               {daysOfWeek.map((day) => (
@@ -148,26 +154,26 @@ export function CourseFilters({
               ))}
             </div>
           </div>
-          <div className="flex flex-col w-full md:w-auto justify-center">
-            <div className="flex flex-row items-center justify-between space-x-4 md:space-x-2 min-w-[191px]">
-              <div className="flex flex-col md:w-[120px] w-full">
+          <div className="flex flex-col w-full xl:w-auto justify-center">
+            <div className="flex flex-row items-center w-full justify-between space-x-4 min-w-[191px]">
+              <div className="flex flex-col w-full xl:w-[112px]">
                 <CustomSelect
                   label="Start Time"
                   options={courseAttributes["times"]}
                   placeholder=""
                   value={selectedStartTime}
                   onChange={(option) => setSelectedStartTime(option)}
-                  className="md:w-[107px] w-full"
+                  className="xl:w-[112px] w-full"
                 />
               </div>
-              <div className="flex flex-col md:w-[120px] w-full">
+              <div className="flex flex-col w-full xl:w-[112px]">
                 <CustomSelect
                   label="End Time"
                   options={courseAttributes["times"]}
                   placeholder=""
                   value={selectedEndTime}
                   onChange={(option) => setSelectedEndTime(option)}
-                  className="md:w-[107px] w-full"
+                  className="xl:w-[112px] w-full"
                 />
               </div>
             </div>
@@ -175,7 +181,9 @@ export function CourseFilters({
         </div>
       </div>
       <div className=" md:hidden flex justify-center w-full text-sm hover:text-blue-300 mb-2 transition-all ease-in-out font-medium cursor-pointer">
-        <div onClick={toggleFilters}>{filtersVisible ? "Hide Filters" : "Show Filters"}</div>
+        <div onClick={toggleFilters}>
+          {filtersVisible ? "Hide Filters" : "Show Filters"}
+        </div>
       </div>
     </div>
   );

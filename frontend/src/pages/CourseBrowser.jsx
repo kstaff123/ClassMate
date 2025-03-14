@@ -18,10 +18,10 @@ export function CourseBrowser() {
         <Header />
       </div>
       {isCartOpen && <CartMobile onClose={toggleCart} />}
-      <div className="grid grid-cols-3 items-center grid-flow-col flex-grow sm:px-8 gap-x-8 max-lg:grid-cols-1">
-        <div className="bg-white col-span-2 w-full h-full sm:h-[87.5vh] short:h-[87.5vh] max-sm:m-0 maxshort:m-0  sm:max-h-7/8  rounded-2xl sm:rounded-4xl shadow-xl p-4">
+      <div className="grid grid-cols-3 items-center grid-flow-col flex-grow shortorsmall:px-8 shortorsmall:gap-x-8 max-lg:grid-cols-1">
+        <div className="bg-white col-span-2 w-full h-full shortorsmall:h-[87.5vh] max-shortorsmall:m-0  shortorsmall:max-h-7/8 max-sm:rounded-2xl shortorsmall:rounded-4xl shadow-xl p-4">
           <div className="flex items-center justify-between">
-            <h2 className="sm:text-2xl font-medium pr-2 text-base">
+            <h2 className="shortorsmall:text-2xl font-medium pr-2 text-base">
               Browse Classes
             </h2>
             <button
@@ -44,17 +44,20 @@ export function CourseBrowser() {
                   strokeLinejoin="round"
                 />
               </svg>
-              <p className="max-sm:hidden">Class Cart</p>
+              <p className="max-shortorsmall:hidden">Class Cart</p>
             </button>
           </div>
           <hr className="text-gray-300 pb-1"></hr>
-          <div className="py-1 flex-row items-center h-full">
+          <div className="py-1 flex-row items-center h-fit">
             <CourseSearch />
           </div>
         </div>
-        <div className="bg-white col-span-1 w-full h-[87.5vh] max-h-7/8 rounded-4xl shadow-xl max-lg:hidden">
+        <div className="bg-white col-span-1 w-full h-full shortorsmall:h-[87.5vh] shortorsmall:max-h-7/8 shortorsmall:rounded-4xl shadow-xl max-lg:hidden">
           <div className="flex p-4 flex-col">
-            <h2 className="text-2xl font-medium ">Class Cart</h2>
+            <h2 className="shortorsmall:text-2xl font-medium text-base ">
+              Class Cart
+            </h2>
+            <hr className="text-gray-300 pb-1"></hr>
             <div className="">
               <Cart />
             </div>
