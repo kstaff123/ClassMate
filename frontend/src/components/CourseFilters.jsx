@@ -180,7 +180,7 @@ export function CourseFilters({
           </div>
         </div>
       </div>
-      <div className=" md:hidden flex justify-center w-full text-sm hover:text-blue-300 mb-2 transition-all ease-in-out font-medium cursor-pointer">
+      <div className=" xl:hidden flex justify-center w-full text-sm hover:text-blue-300 mb-2 transition-all ease-in-out font-medium cursor-pointer">
         <div onClick={toggleFilters}>
           {filtersVisible ? "Hide Filters" : "Show Filters"}
         </div>
