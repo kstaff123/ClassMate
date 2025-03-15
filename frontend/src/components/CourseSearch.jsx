@@ -168,8 +168,8 @@ export function CourseSearch() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-between gap-4 w-full h-full sm:h-[calc(80vh-129px)]">
-      <div className="flex flex-col w-full sm:max-h-full">
+    <div className="flex flex-col items-center justify-between gap-4 w-full h-full ">
+      <div className="flex flex-col w-full h-[calc(110vh-50px)] xl:max-h-full">
         {/* Search and Filter Form */}
         <CourseFilters
           searchInput={searchInput}
@@ -192,7 +192,7 @@ export function CourseSearch() {
         />
 
         {/* Scrollable Course List */}
-        <div className="flex flex-col mt-4 border min-h-16 border-gray-300 rounded-md overflow-y-scroll">
+        <div className="flex flex-col mt-4 border min-h-40 h-full max-shortorsmall:h-full  border-gray-300 rounded-md overflow-y-scroll">
           <div className="font-semibold text-base">
             {loading ? (
               <div className="flex justify-center items-center h-full py-4">

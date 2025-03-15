@@ -18,7 +18,7 @@ export function CourseBrowser() {
         <Header />
       </div>
       {isCartOpen && <CartMobile onClose={toggleCart} />}
-      <div className="grid grid-cols-3 items-center grid-flow-col flex-grow shortorsmall:px-8 shortorsmall:gap-x-8 max-lg:grid-cols-1">
+      <div className="grid grid-cols-3 items-center grid-flow-col flex-grow max-shortorsmall:h-[2000px] shortorsmall:px-8 shortorsmall:gap-x-8 max-lg:grid-cols-1">
         <div className="bg-white col-span-2 w-full h-full shortorsmall:h-[87.5vh] max-shortorsmall:m-0  shortorsmall:max-h-7/8 max-sm:rounded-2xl shortorsmall:rounded-4xl shadow-xl p-4">
           <div className="flex items-center justify-between">
             <h2 className="shortorsmall:text-2xl font-medium pr-2 text-base">
@@ -48,7 +48,7 @@ export function CourseBrowser() {
             </button>
           </div>
           <hr className="text-gray-300 pb-1"></hr>
-          <div className="py-1 flex-row items-center h-fit">
+          <div className="py-1 flex-row flex items-center h-[calc(120vh-100px)] shortorsmall:h-[calc(90vh-200px)]">
             <CourseSearch />
           </div>
         </div>
