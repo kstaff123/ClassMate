@@ -19,11 +19,11 @@ export function Homepage() {
         <Header />
       </div>
       {isCartOpen && <CartMobile onClose={toggleCart} />}
-      <div className="grid grid-cols-3 items-center grid-flow-col flex-grow sm:px-8  gap-x-8 max-lg:grid-cols-1">
-        <div className="bg-white col-span-2 w-full h-[100vh] sm:h-[87.5vh] max-sm:m-0 sm:max-h-7/8 rounded-2xl sm:rounded-4xl shadow-xl overflow-hidden">
-          <div className="flex flex-col sm:p-4 max-h-full">
-            <div className="flex items-center max-sm:pt-4 max-sm:px-4 justify-between">
-              <h2 className="sm:text-2xl font-medium pr-2 text-base">
+      <div className="grid grid-cols-3 items-center grid-flow-col flex-grow shortorsmall:px-8  shortorsmall:gap-x-8 max-lg:grid-cols-1">
+        <div className="bg-white col-span-2 w-full h-[100vh] shortorsmall:h-[87.5vh] max-sm:m-0 shortorsmall:max-h-7/8  shortorsmall:rounded-4xl shadow-xl overflow-hidden">
+          <div className="flex flex-col shortorsmall:p-4 max-h-full">
+            <div className="flex items-center p-0 anysizeshort:pt-4 max-xl:pt-4 anysizeshort:px-4 max-xl:px-4 justify-between">
+              <h2 className="shortorsmall:text-2xl font-medium text-base">
                 Schedule
               </h2>
               <button
@@ -32,7 +32,7 @@ export function Homepage() {
                 onClick={toggleCart}
               >
                 <svg
-                  className="mr-2 "
+                  className="sm:mr-2 mr-4"
                   width="18"
                   height="18"
                   viewBox="0 0 24 24"
@@ -49,10 +49,10 @@ export function Homepage() {
                 <p className="max-sm:hidden">Class Cart</p>
               </button>
             </div>
-            <hr className="text-gray-300 mb-4 max-sm:mx-4"></hr>
+            <hr className="text-gray-300 mb-4 max-xl:mx-4 px-4"></hr>
             <div
               id="scrollable-container"
-              className="mx-.9 overflow-y-scroll overflow-x-hidden rounded-xl h-full sm:h-auto max-sm:hidden"
+              className="mx-.9 overflow-y-scroll overflow-x-hidden xl:rounded-xl h-full sm:h-[calc(100vh-120px)] max-sm:hidden"
             >
               <Schedule />
             </div>
@@ -61,9 +61,12 @@ export function Homepage() {
             </div>
           </div>
         </div>
-        <div className="bg-white col-span-1 w-full h-[87.5vh] max-h-7/8 rounded-4xl shadow-xl max-lg:hidden">
+        <div className="bg-white col-span-1 w-full h-full shortorsmall:h-[87.5vh] shortorsmall:max-h-7/8 shortorsmall:rounded-4xl shadow-xl max-lg:hidden">
           <div className="flex p-4 flex-col">
-            <h2 className="text-2xl font-medium">Class Cart</h2>
+            <h2 className="shortorsmall:text-2xl font-medium text-base ">
+              Class Cart
+            </h2>
+            <hr className="text-gray-300 pb-1"></hr>
             <div className="">
               <Cart />
             </div>
