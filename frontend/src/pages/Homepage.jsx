@@ -52,7 +52,7 @@ export function Homepage() {
             <hr className="text-gray-300 mb-4 max-xl:mx-4 px-4"></hr>
             <div
               id="scrollable-container"
-              className="mx-.9 overflow-y-scroll overflow-x-hidden xl:rounded-xl h-full sm:h-[calc(100vh-120px)] max-sm:hidden"
+              className="mx-.9 overflow-y-scroll overflow-x-hidden  h-full sm:h-[calc(100vh-120px)] max-sm:hidden"
             >
               <Schedule />
             </div>
