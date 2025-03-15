@@ -12,6 +12,12 @@
   },
   "pluginOptions": {},
   "attributes": {
+    "days": {
+      "type": "json"
+    },
+    "location": {
+      "type": "string"
+    },
     "class": {
       "type": "relation",
       "relation": "manyToOne",
@@ -23,12 +29,6 @@
     },
     "end_time": {
       "type": "string"
-    },
-    "location": {
-      "type": "string"
-    },
-    "days": {
-      "type": "json"
     }
   }
 }

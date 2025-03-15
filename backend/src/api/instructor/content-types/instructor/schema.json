@@ -12,17 +12,8 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "first_name": {
+    "name": {
       "type": "string"
-    },
-    "last_name": {
-      "type": "string"
-    },
-    "class": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::class.class",
-      "inversedBy": "instructors"
     }
   }
 }

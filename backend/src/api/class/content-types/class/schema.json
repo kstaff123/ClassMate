@@ -12,16 +12,16 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "crn": {
+    "title": {
       "type": "string"
     },
     "subject": {
       "type": "string"
     },
-    "class_number": {
+    "crn": {
       "type": "string"
     },
-    "title": {
+    "class_number": {
       "type": "string"
     },
     "term": {
@@ -40,13 +40,7 @@
       "type": "string"
     },
     "prerequisites": {
-      "type": "string"
-    },
-    "class_attributes": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::class-attribute.class-attribute",
-      "mappedBy": "class"
+      "type": "text"
     },
     "schedules": {
       "type": "relation",
@@ -54,11 +48,28 @@
       "target": "api::schedule.schedule",
       "mappedBy": "class"
     },
+    "class_attributes": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::class-attribute.class-attribute",
+      "mappedBy": "class"
+    },
     "instructors": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::instructor.instructor",
-      "mappedBy": "class"
+      "target": "api::instructor.instructor"
+    },
+    "charges_date": {
+      "type": "string"
+    },
+    "charges": {
+      "type": "json"
+    },
+    "notes": {
+      "type": "text"
+    },
+    "credits": {
+      "type": "string"
     }
   }
 }

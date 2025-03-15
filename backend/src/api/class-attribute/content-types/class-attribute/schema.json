@@ -4,8 +4,7 @@
   "info": {
     "singularName": "class-attribute",
     "pluralName": "class-attributes",
-    "displayName": "Class Attributes",
-    "description": ""
+    "displayName": "Class Attributes"
   },
   "options": {
     "draftAndPublish": true

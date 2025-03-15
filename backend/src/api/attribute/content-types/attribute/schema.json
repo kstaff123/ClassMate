@@ -4,21 +4,20 @@
   "info": {
     "singularName": "attribute",
     "pluralName": "attributes",
-    "displayName": "Attributes",
-    "description": ""
+    "displayName": "Attributes"
   },
   "options": {
     "draftAndPublish": true
   },
   "pluginOptions": {},
   "attributes": {
-    "attribute_type": {
+    "attribute_code": {
       "type": "string"
     },
     "attribute_name": {
       "type": "string"
     },
-    "attribute_code": {
+    "attribute_type": {
       "type": "string"
     },
     "class_attributes": {
