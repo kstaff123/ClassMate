@@ -1,7 +1,7 @@
 import "../App.css";
 import React, { useState, useRef, useEffect } from "react";
 import { useCart } from "./CartContext";
-
+import { convert24hourTo12hour } from "./TimeConverter";
 // Map for day names
 const dayNameMap = {
   Sun: "sunday",
@@ -31,15 +31,6 @@ const tailwindColorMap = {
   "bg-pink-400": "#f472b6",
   "bg-rose-400": "#fb7185",
 };
-
-function convert24hourTo12hour(time24) {
-  const [hourStr, minute] = time24.split(":");
-  let hour = parseInt(hourStr, 10);
-  const ampm = hour >= 12 ? "pm" : "am";
-  if (hour === 0) hour = 12;
-  else if (hour > 12) hour -= 12;
-  return `${hour}:${minute}${ampm}`;
-}
 
 function parseTimeToFloat(timeStr) {
   const match = timeStr.match(/(\d+):(\d+)(am|pm)/i);
@@ -140,8 +131,15 @@ export function Schedule() {
   cart.forEach((course) => {
     if (!course.schedules) return;
     course.schedules.forEach((sched) => {
-      if (!sched.days || sched.start_time === "TBA" || sched.end_time === "TBA")
+      if (
+        !sched.days ||
+        sched.start_time === "TBA" ||
+        sched.end_time === "TBA" ||
+        convert24hourTo12hour(sched.start_time) === "TBA" ||
+        convert24hourTo12hour(sched.end_time) === "TBA"
+      ) {
         return;
+      }
       const hour12starttime = convert24hourTo12hour(sched.start_time);
       const hour12endtime = convert24hourTo12hour(sched.end_time);
       const startFloat = parseTimeToFloat(hour12starttime || "7:00am");

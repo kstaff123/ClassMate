@@ -1,6 +1,7 @@
 import "../App.css";
 import React, { useRef } from "react";
 import { useCart } from "./CartContext";
+import { convert24hourTo12hour } from "./TimeConverter";
 
 // Map for day names (the schedule uses lowercase keys)
 const dayNameMap = {
@@ -14,34 +15,24 @@ const dayNameMap = {
 };
 
 const tailwindColorMap = {
-    "bg-red-400": "#f87171",
-    "bg-orange-400": "#fb923c",
-    "bg-amber-400": "#facc15",
-    "bg-yellow-400": "#facc15", // adjust as needed
-    "bg-lime-400": "#bef264",
-    "bg-green-400": "#4ade80",
-    "bg-emerald-400": "#34d399",
-    "bg-teal-400": "#2dd4bf",
-    "bg-cyan-400": "#22d3ee",
-    "bg-sky-400": "#38bdf8",
-    "bg-blue-400": "#60a5fa",
-    "bg-indigo-400": "#818cf8",
-    "bg-violet-400": "#a78bfa",
-    "bg-purple-400": "#c084fc",
-    "bg-fuchsia-400": "#f472b6",
-    "bg-pink-400": "#f472b6",
-    "bg-rose-400": "#fb7185",
-  };
-
-// Converts "13:00" => "1:00pm"
-function convert24hourTo12hour(time24) {
-  const [hourStr, minute] = time24.split(":");
-  let hour = parseInt(hourStr, 10);
-  const ampm = hour >= 12 ? "pm" : "am";
-  if (hour === 0) hour = 12;
-  else if (hour > 12) hour -= 12;
-  return `${hour}:${minute}${ampm}`;
-}
+  "bg-red-400": "#f87171",
+  "bg-orange-400": "#fb923c",
+  "bg-amber-400": "#facc15",
+  "bg-yellow-400": "#facc15", // adjust as needed
+  "bg-lime-400": "#bef264",
+  "bg-green-400": "#4ade80",
+  "bg-emerald-400": "#34d399",
+  "bg-teal-400": "#2dd4bf",
+  "bg-cyan-400": "#22d3ee",
+  "bg-sky-400": "#38bdf8",
+  "bg-blue-400": "#60a5fa",
+  "bg-indigo-400": "#818cf8",
+  "bg-violet-400": "#a78bfa",
+  "bg-purple-400": "#c084fc",
+  "bg-fuchsia-400": "#f472b6",
+  "bg-pink-400": "#f472b6",
+  "bg-rose-400": "#fb7185",
+};
 
 // Parses "7:30am" => a float where 7:00am = 0, 7:30am = 0.5, 8:00am = 1, etc.
 // (Our reference time is 7am)
@@ -94,9 +85,17 @@ export function MobileSchedule() {
   cart.forEach((course) => {
     if (!course.schedules) return;
     course.schedules.forEach((sched) => {
-      if (!sched.days || sched.start_time === "TBA" || sched.end_time === "TBA")
+      if (
+        !sched.days ||
+        sched.start_time === "TBA" ||
+        sched.end_time === "TBA" ||
+        convert24hourTo12hour(sched.start_time) === "TBA" ||
+        convert24hourTo12hour(sched.end_time) === "TBA"
+      )
         return;
-      const startFloat = parseTimeToFloat(convert24hourTo12hour(sched.start_time));
+      const startFloat = parseTimeToFloat(
+        convert24hourTo12hour(sched.start_time)
+      );
       const endFloat = parseTimeToFloat(convert24hourTo12hour(sched.end_time));
       if (endFloat <= startFloat) return;
       const startCell = Math.floor(startFloat);
@@ -206,7 +205,8 @@ export function MobileSchedule() {
                         const totalHours = block.endFloat - block.startFloat;
                         if (totalHours <= 0) return null;
                         // Calculate the fractional offset in the start cell
-                        const coverageStart = block.startFloat - block.startCell;
+                        const coverageStart =
+                          block.startFloat - block.startCell;
                         const topPercent = coverageStart * 100;
                         const heightPercent = totalHours * 100;
                         const radiusStyle = {
@@ -227,7 +227,10 @@ export function MobileSchedule() {
                               right: 0,
                               top: topPercent + "%",
                               height: heightPercent + "%",
-                              backgroundColor: tailwindColorMap[courseColors[block.course.id]] || "#1d4ed8",
+                              backgroundColor:
+                                tailwindColorMap[
+                                  courseColors[block.course.id]
+                                ] || "#1d4ed8",
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "center",
