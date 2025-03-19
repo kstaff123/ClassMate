@@ -16,7 +16,7 @@ export const fetchCourseList = async (page = 1, pageSize = 10, filters = {}) => 
       filterQuery += `&filters[class_attributes][attribute][attribute_code][$eq]=${encodeURIComponent(filters.selectedGUR)}`;
     }
     if (filters.selectedDelivery) {
-      filterQuery += `&filters[class_attributes][attribute][attribute_code][$eq]=${encodeURIComponent(filters.selectedDelivery)}`;
+      filterQuery += `&filters[class_attributes][attribute][attribute_code][$eq]=DELIVERY ${encodeURIComponent(filters.selectedDelivery)}`;
     }
     if (filters.selectedInstructor) {
       filterQuery += `&filters[instructors][name][$eq]=${encodeURIComponent(filters.selectedInstructor)}`;
@@ -37,11 +37,16 @@ export const fetchCourseList = async (page = 1, pageSize = 10, filters = {}) => 
       `pagination[page]=${page}`,
       `pagination[pageSize]=${pageSize}`,
       `populate=*`,
-      `populate[class_attributes][populate][attribute][populate][class_attributes][populate]=*`,
-      `populate[schedules][populate]=*`,
-      `populate[instructors][populate]=*`,
+      `populate[class_attributes][populate][attribute][populate]`,
+      `populate[schedules][populate]`,
+      `populate[instructors][populate]`,
       filterQuery
     ].join('&');
+
+    console.log("Base URL:", baseUrl);
+    console.log("API Token:", apiToken);
+    console.log("Generated Query String:", queryString);
+    console.log("Full Fetch URL:", `${baseUrl}/api/classes?${queryString}`);
 
     const response = await fetch(`${baseUrl}/api/classes?${queryString}`, {
       method: 'GET',
@@ -51,11 +56,15 @@ export const fetchCourseList = async (page = 1, pageSize = 10, filters = {}) => 
       }
     });
 
-    if (!response.ok) throw new Error('Failed to fetch course list');
+    if (!response.ok) {
+      console.error("Response Status:", response.status);
+      console.error("Response Text:", await response.text());
+      throw new Error('Failed to fetch course list');
+    }
+
     return response.json();
   } catch (error) {
     console.error("Error fetching course list:", error);
     return null;
   }
 };
-

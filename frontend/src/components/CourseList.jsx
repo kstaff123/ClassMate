@@ -4,6 +4,40 @@ import { Instructor } from "./Instructor";
 import { useCart } from "./CartContext";
 import { convert24hourTo12hour } from "./TimeConverter";
 
+// Helper function to parse days string into JSON
+const parseDaysString = (daysString) => {
+  const dayMap = {
+    M: "monday",
+    T: "tuesday",
+    W: "wednesday",
+    R: "thursday",
+    F: "friday",
+    S: "saturday",
+    U: "sunday", // Using 'U' for Sunday to avoid conflict with Saturday
+  };
+
+  const days = {
+    sunday: false,
+    monday: false,
+    tuesday: false,
+    wednesday: false,
+    thursday: false,
+    friday: false,
+    saturday: false,
+  };
+
+  if (!daysString) return days;
+
+  for (const char of daysString) {
+    const dayKey = dayMap[char];
+    if (dayKey) {
+      days[dayKey] = true;
+    }
+  }
+
+  return days;
+};
+
 export function CourseList({ courses, variant }) {
   const { cart, addToCart, removeFromCart, courseColors } = useCart();
 
@@ -109,43 +143,48 @@ export function CourseList({ courses, variant }) {
 
                 {/* Class Schedule */}
                 {course.schedules?.length > 0 ? (
-                  course.schedules.map((schedule, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center font-normal text-xs sm:text-sm space-x-2"
-                    >
-                      {/* Days Display */}
-                      <div className="flex items-center space-x-1">
-                        {daysOfWeek.map((day) => {
-                          const isActive = schedule.days?.[day.key] === true;
-                          return (
-                            <span
-                              key={day.key}
-                              className={
-                                isActive
-                                  ? variant === "cart"
-                                    ? "text-white font-bold"
-                                    : "text-gray-900 font-bold"
-                                  : variant === "cart"
-                                  ? "text-gray-200 font-medium"
-                                  : "text-gray-400 font-medium"
-                              }
-                            >
-                              {day.label}
-                            </span>
-                          );
-                        })}
+                  course.schedules.map((schedule, index) => {
+                    // Parse the days string into JSON
+                    const daysJson = parseDaysString(schedule.days);
+
+                    return (
+                      <div
+                        key={index}
+                        className="flex items-center font-normal text-xs sm:text-sm space-x-2"
+                      >
+                        {/* Days Display */}
+                        <div className="flex items-center space-x-1">
+                          {daysOfWeek.map((day) => {
+                            const isActive = daysJson[day.key] === true;
+                            return (
+                              <span
+                                key={day.key}
+                                className={
+                                  isActive
+                                    ? variant === "cart"
+                                      ? "text-white font-bold"
+                                      : "text-gray-900 font-bold"
+                                    : variant === "cart"
+                                    ? "text-gray-200 font-medium"
+                                    : "text-gray-400 font-medium"
+                                }
+                              >
+                                {day.label}
+                              </span>
+                            );
+                          })}
+                        </div>
+                        <p className="text-sm">|</p>
+                        <p>
+                          {schedule.start_time && schedule.end_time
+                            ? `${convert24hourTo12hour(
+                                schedule.start_time
+                              )} - ${convert24hourTo12hour(schedule.end_time)}`
+                            : "TBA"}
+                        </p>
                       </div>
-                      <p className="text-sm">|</p>
-                      <p>
-                        {schedule.start_time && schedule.end_time
-                          ? `${convert24hourTo12hour(
-                              schedule.start_time
-                            )} - ${convert24hourTo12hour(schedule.end_time)}`
-                          : "TBA"}
-                      </p>
-                    </div>
-                  ))
+                    );
+                  })
                 ) : (
                   <p className="text-sm">No schedule data</p>
                 )}
