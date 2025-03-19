@@ -2,6 +2,28 @@
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 const apiToken = import.meta.env.VITE_API_TOKEN;
 
+// Helper function to convert JSON days filter to string format
+const convertDaysFilterToString = (selectedDays) => {
+  const dayMap = {
+    monday: 'M',
+    tuesday: 'T',
+    wednesday: 'W',
+    thursday: 'R',
+    friday: 'F',
+    saturday: 'S',
+    sunday: 'U', // Using 'U' for Sunday to avoid conflict with Saturday
+  };
+
+  let daysString = '';
+  selectedDays.forEach(day => {
+    if (dayMap[day.key]) {
+      daysString += dayMap[day.key];
+    }
+  });
+
+  return daysString;
+};
+
 export const fetchCourseList = async (page = 1, pageSize = 10, filters = {}) => {
   try {
     // Build filter query parameters:
@@ -22,9 +44,9 @@ export const fetchCourseList = async (page = 1, pageSize = 10, filters = {}) => 
       filterQuery += `&filters[instructors][name][$eq]=${encodeURIComponent(filters.selectedInstructor)}`;
     }
     if (filters.selectedDays) {
-      filters.selectedDays.forEach(day => {
-        filterQuery += `&filters[schedules][days][${day.key}][$eq]=true`;
-      });
+      // Convert selectedDays JSON to string format
+      const daysString = convertDaysFilterToString(filters.selectedDays);
+      filterQuery += `&filters[schedules][days][$contains]=${encodeURIComponent(daysString)}`;
     }
     if (filters.selectedStartTime) {
       filterQuery += `&filters[schedules][start_time][$gte]=${encodeURIComponent(filters.selectedStartTime)}`;
@@ -33,6 +55,7 @@ export const fetchCourseList = async (page = 1, pageSize = 10, filters = {}) => 
       filterQuery += `&filters[schedules][end_time][$lte]=${encodeURIComponent(filters.selectedEndTime)}`;
     }
 
+    // Build the query string
     const queryString = [
       `pagination[page]=${page}`,
       `pagination[pageSize]=${pageSize}`,
@@ -48,6 +71,7 @@ export const fetchCourseList = async (page = 1, pageSize = 10, filters = {}) => 
     console.log("Generated Query String:", queryString);
     console.log("Full Fetch URL:", `${baseUrl}/api/classes?${queryString}`);
 
+    // Call the API
     const response = await fetch(`${baseUrl}/api/classes?${queryString}`, {
       method: 'GET',
       headers: {
