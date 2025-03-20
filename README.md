@@ -25,6 +25,12 @@ ClassMate is designed by students, for students. With a sleek UI built in React,
 - **Up-to-Date Replacement:** Modern solution to overhaul the legacy classfinder system.
 
 ---
+## Get Started
+- Install project dependencies
+- Set up frontend and backend .env files
+- Start frontend with `npm run dev`
+- Start backend with `npm run develop`
+---
 
 ## Built With
 
