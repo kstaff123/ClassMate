@@ -219,7 +219,7 @@ export function CourseSearch() {
               </div>
             ) : classes.length > 0 ? (
               <ul className="">
-                <div className="flex flex-col rounded-md overflow-y-scroll">
+                <div className="flex flex-col rounded-md no-scrollbar p-0 overflow-y-scroll">
                   <div className="font-semibold text-base">
                     {loading ? (
                       <div className="flex justify-center items-center min-h-72 h-full py-4">

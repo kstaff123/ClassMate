@@ -213,29 +213,15 @@ export function Schedule() {
   return (
     <div className="flex w-full text-sm">
       <div
+        role="grid"
         className="grid w-full"
         style={{ gridTemplateColumns: "40px repeat(7, 1fr)" }}
         ref={scheduleRef}
       >
         {/* Header Row */}
-        <div
-          className="bg-gray-100 relative drop-shadow-md"
-          style={{
-            height: 30,
-            position: "sticky",
-            top: 0,
-            zIndex: 10,
-            background: "#f3f4f6",
-          }}
-          onPointerDown={handlePointerDown}
-          onTouchStart={handleTouchStart}
-        >
-          <div className="absolute bottom-0 left-0 right-0 h-4" />
-        </div>
-        {days.map((day) => (
+        <div role="row" className="contents">
           <div
-            key={day}
-            className="p-2 text-center font-medium bg-gray-100 flex items-center justify-center drop-shadow-md border border-gray-300"
+            className="bg-gray-100 relative drop-shadow-md"
             style={{
               height: 30,
               position: "sticky",
@@ -243,24 +229,37 @@ export function Schedule() {
               zIndex: 10,
               background: "#f3f4f6",
             }}
-            onPointerDown={handlePointerDown}
-            onTouchStart={handleTouchStart}
-          >
-            {day}
-          </div>
-        ))}
+          />
+          {days.map((day) => (
+            <div
+              role="columnheader"
+              key={day}
+              className="p-2 text-center font-medium bg-gray-100 flex items-center justify-center drop-shadow-md border border-gray-300"
+              style={{
+                height: 30,
+                position: "sticky",
+                top: 0,
+                zIndex: 10,
+                background: "#f3f4f6",
+              }}
+            >
+              {day}
+            </div>
+          ))}
+        </div>
 
         {/* Time Rows */}
         {times.map((timeLabel, hourIndex) => (
-          <React.Fragment key={hourIndex}>
+          <div className="contents" role="row" key={hourIndex}>
             <div
+              role="rowheader"
               className="p-2 text-center font-medium bg-gray-100 flex items-center justify-center relative border border-gray-300"
               style={{ height: rowHeight, borderTop: "1px solid #ccc" }}
               data-time-index={hourIndex}
               onPointerDown={handlePointerDown}
               onTouchStart={handleTouchStart}
             >
-              {timeLabel}
+              <div aria-label={timeLabel}>{timeLabel}</div>
             </div>
             {days.map((_day, dayIndex) => {
               const cellKey = `${dayIndex}-${hourIndex}`;
@@ -283,6 +282,8 @@ export function Schedule() {
 
               return (
                 <div
+                  role="cell"
+                  aria-hidden={blocks.length === 0 ? "true" : "false"}
                   key={cellKey}
                   style={cellStyle}
                   onPointerDown={handlePointerDown}
@@ -310,6 +311,14 @@ export function Schedule() {
                     return (
                       <div
                         key={idx}
+                        role="gridcell"
+                        aria-label={`Class ${block.course.subject} ${
+                          block.course.class_number
+                        } on ${days[dayIndex]} from ${convert24hourTo12hour(
+                          block.course.schedules[0]?.start_time
+                        )} to ${convert24hourTo12hour(
+                          block.course.schedules[0]?.end_time
+                        )}`}
                         style={{
                           textAlign: "center",
                           position: "absolute",
@@ -335,7 +344,7 @@ export function Schedule() {
                           ...radiusStyle,
                         }}
                       >
-                        <div style={{ textAlign: "center" }}>
+                        <div aria-hidden style={{ textAlign: "center" }}>
                           {block.course.subject} {block.course.class_number}
                         </div>
                       </div>
@@ -344,7 +353,7 @@ export function Schedule() {
                 </div>
               );
             })}
-          </React.Fragment>
+          </div>
         ))}
       </div>
     </div>
